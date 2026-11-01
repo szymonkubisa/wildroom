@@ -204,7 +204,7 @@ describe('ComfyUI proxy', () => {
 
   it('refuses a websocket from another site', async () => {
     const res = await request('/ws', {
-      headers: { connection: 'Upgrade', upgrade: 'websocket', origin: 'https://evil.example', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', 'sec-websocket-version': '13' },
+      headers: { connection: 'Upgrade', upgrade: 'websocket', origin: 'https://evil.example', 'sec-websocket-key': 'dGhlIHNhbXBsZSBub25jZQ==', 'sec-websocket-version': '13' }, // gitleaks:allow — the RFC 6455 sample key
     })
     expect(res.status).toBe(403)
     expect(upgrades).toHaveLength(0)

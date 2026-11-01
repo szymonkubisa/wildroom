@@ -10,7 +10,7 @@ can drive all of it over MCP.
 Everything runs on your Mac: a Vue app in the browser (or the desktop app) talks to a small Node server on
 `127.0.0.1`. API keys live in the macOS Keychain.
 
-**[The story behind it and the film made with it → szymonkubisa.com/work/wildroom](https://szymonkubisa.com/work/wildroom)**
+**[Website → szymonkubisa.com/wildroom](https://szymonkubisa.com/wildroom)** · [the story behind it and the film made with it](https://szymonkubisa.com/work/wildroom)
 
 ## At a glance
 
