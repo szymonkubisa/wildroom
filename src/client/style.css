@@ -1,0 +1,394 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+/*
+ * Surface ladder (both themes share it, the tones are inverted):
+ *   window (--background) → panels (--sidebar, the editor's rounded cards) → nested cards (--card)
+ *   → popovers (--popover, with --pop-shadow). Fields, hovers and borders are translucent so they sit
+ *   right on whichever surface they land on.
+ *
+ * Light theme: an inversion of the dark one — a soft light-grey window, white panels and popovers with a
+ * soft shadow, black-tinted fields and near-black buttons; Generate and the other primary actions are violet (--brand).
+ */
+:root {
+  color-scheme: light;
+  --radius: 0.75rem;
+  /* Almost white: the white panels sit on it with very little contrast (a hairline keeps their edges). */
+  --background: oklch(0.988 0.001 286);
+  --foreground: oklch(0.16 0.004 286);
+  --card: oklch(1 0 0);
+  --card-foreground: oklch(0.16 0.004 286);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.16 0.004 286);
+  --primary: oklch(0.18 0.004 286);
+  --primary-foreground: oklch(0.985 0 0);
+  --secondary: oklch(0.965 0.001 286);
+  --secondary-foreground: oklch(0.18 0.004 286);
+  --muted: oklch(0.968 0.001 286);
+  --muted-foreground: oklch(0.5 0.008 286);
+  --accent: oklch(0 0 0 / 5%);
+  --accent-foreground: oklch(0.14 0.004 286);
+  --destructive: oklch(0.57 0.22 25);
+  --border: oklch(0 0 0 / 6%);
+  --input: oklch(0 0 0 / 8%);
+  --ring: oklch(0.55 0.004 286);
+  /* Flat fields: inputs, selects and secondary buttons are a soft fill instead of an outline. */
+  --field: oklch(0 0 0 / 4.5%);
+  --field-hover: oklch(0 0 0 / 7.5%);
+  /* Raised: the active pill of a segmented control / tab list, lifted off the field. */
+  --raised: oklch(1 0 0);
+  --pop-shadow: 0 0 0 1px oklch(0 0 0 / 5%), 0 2px 4px oklch(0 0 0 / 4%), 0 16px 40px -10px oklch(0 0 0 / 18%);
+  --chart-1: oklch(0.646 0.222 41.116);
+  --chart-2: oklch(0.6 0.118 184.704);
+  --chart-3: oklch(0.398 0.07 227.392);
+  --chart-4: oklch(0.828 0.189 84.429);
+  --chart-5: oklch(0.769 0.188 70.08);
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.16 0.004 286);
+  --sidebar-primary: oklch(0.18 0.004 286);
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0 0 0 / 5%);
+  --sidebar-accent-foreground: oklch(0.14 0.004 286);
+  --sidebar-border: oklch(0 0 0 / 6%);
+  --sidebar-ring: oklch(0.55 0.004 286);
+
+  /* Editor tokens (FCP-like) */
+  /* The accent: Generate and the other primary actions, done steps, progress — violet, as Auto and the Director were. */
+  --brand: oklch(0.52 0.22 285);
+  --brand-foreground: oklch(0.99 0 0);
+  --playhead: oklch(0.2 0.004 286);
+  --skimmer: oklch(0.66 0.19 350);
+  --selection: oklch(0.8 0.16 85);
+  --role-video: oklch(0.57 0.15 262);
+  --role-titles: oklch(0.55 0.19 292);
+  --role-motion: oklch(0.58 0.17 330);
+  --role-dialogue: oklch(0.58 0.12 220);
+  --role-music: oklch(0.6 0.15 155);
+  --role-effects: oklch(0.66 0.15 58);
+  --role-captions: oklch(0.76 0.14 90);
+  --timeline-bg: oklch(1 0 0);
+  --viewer-bg: oklch(0.985 0.001 286);
+}
+
+/*
+ * Dark (the showcase): a near-black window with charcoal rounded panels separated by small gaps, slightly
+ * lighter nested cards and popovers, translucent white fields, white buttons, and violet (--brand) for Generate and the
+ * other primary actions — the one colour on screen besides the media, as in the generators' own dark studios.
+ */
+.dark {
+  color-scheme: dark;
+  --background: oklch(0.118 0.003 286);
+  --foreground: oklch(0.95 0 0);
+  --card: oklch(0.218 0.004 286);
+  --card-foreground: oklch(0.95 0 0);
+  --popover: oklch(0.215 0.003 286);
+  --popover-foreground: oklch(0.96 0 0);
+  --primary: oklch(0.96 0.002 286);
+  --primary-foreground: oklch(0.17 0.004 286);
+  --secondary: oklch(0.26 0.003 286);
+  --secondary-foreground: oklch(0.96 0 0);
+  --muted: oklch(0.245 0.003 286);
+  --muted-foreground: oklch(0.67 0.006 286);
+  --accent: oklch(1 0 0 / 8%);
+  --accent-foreground: oklch(0.98 0 0);
+  --destructive: oklch(0.68 0.19 22);
+  --border: oklch(1 0 0 / 6%);
+  --input: oklch(1 0 0 / 8%);
+  --ring: oklch(0.7 0.004 286);
+  --field: oklch(1 0 0 / 6.5%);
+  --field-hover: oklch(1 0 0 / 10%);
+  --raised: oklch(1 0 0 / 12%);
+  --pop-shadow: 0 0 0 1px oklch(1 0 0 / 7%), 0 1px 0 0 oklch(1 0 0 / 4%) inset, 0 20px 48px -12px oklch(0 0 0 / 70%);
+  --sidebar: oklch(0.172 0.004 286);
+  --sidebar-foreground: oklch(0.95 0 0);
+  --sidebar-primary: oklch(0.96 0.002 286);
+  --sidebar-primary-foreground: oklch(0.17 0.004 286);
+  --sidebar-accent: oklch(1 0 0 / 8%);
+  --sidebar-accent-foreground: oklch(0.98 0 0);
+  --sidebar-border: oklch(1 0 0 / 6%);
+  --sidebar-ring: oklch(0.7 0.004 286);
+  /* Violet with white text: about 4.5:1 both ways — white on it, and it as text on the window. */
+  --brand: oklch(0.57 0.21 285);
+  --brand-foreground: oklch(0.99 0 0);
+  --playhead: oklch(0.97 0 0);
+  --skimmer: oklch(0.72 0.17 350);
+  --selection: oklch(0.86 0.15 90);
+  --role-video: oklch(0.61 0.15 262);
+  --role-titles: oklch(0.6 0.18 292);
+  --role-motion: oklch(0.65 0.16 330);
+  --role-dialogue: oklch(0.66 0.12 220);
+  --role-music: oklch(0.68 0.15 155);
+  --role-effects: oklch(0.72 0.15 60);
+  --role-captions: oklch(0.82 0.13 92);
+  --timeline-bg: oklch(0.172 0.004 286);
+  --viewer-bg: oklch(0.155 0.003 286);
+}
+
+/* Light: a card nested in a white panel steps down to a soft grey instead (the dark theme steps up). */
+:root:not(.dark) :is(.bg-sidebar, .bg-timeline) {
+  --card: oklch(0.982 0.001 286);
+}
+
+/* Light: panels and window are nearly the same white, so a faint hairline marks the panel edges. */
+:root:not(.dark) .panel-card {
+  box-shadow: 0 0 0 1px oklch(0 0 0 / 3.5%);
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-field: var(--field);
+  --color-field-hover: var(--field-hover);
+  --color-raised: var(--raised);
+  --color-chart-1: var(--chart-1);
+  --color-chart-2: var(--chart-2);
+  --color-chart-3: var(--chart-3);
+  --color-chart-4: var(--chart-4);
+  --color-chart-5: var(--chart-5);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+  --color-brand: var(--brand);
+  --color-brand-foreground: var(--brand-foreground);
+  --color-playhead: var(--playhead);
+  --color-skimmer: var(--skimmer);
+  --color-selection: var(--selection);
+  --color-role-video: var(--role-video);
+  --color-role-titles: var(--role-titles);
+  --color-role-motion: var(--role-motion);
+  --color-role-dialogue: var(--role-dialogue);
+  --color-role-music: var(--role-music);
+  --color-role-effects: var(--role-effects);
+  --color-role-captions: var(--role-captions);
+  --color-timeline: var(--timeline-bg);
+  --color-viewer: var(--viewer-bg);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --radius-2xl: calc(var(--radius) + 8px);
+  --shadow-pop: var(--pop-shadow);
+  --font-sans: "Inter", ui-sans-serif, system-ui, -apple-system, "SF Pro Text", sans-serif;
+  --font-mono: ui-monospace, "SF Mono", Menlo, monospace;
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+    /* Thin, tinted scrollbars (menus, lists, the script editor) instead of the heavy default. */
+    scrollbar-width: thin;
+    scrollbar-color: color-mix(in oklch, var(--foreground) 18%, transparent) transparent;
+  }
+  html,
+  body,
+  #app {
+    height: 100%;
+  }
+  body {
+    @apply bg-background text-foreground antialiased;
+    font-size: 13px;
+    letter-spacing: -0.003em;
+    /* Inter: single-storey a, open digits; ignored by the system fallback. */
+    font-feature-settings: "cv11", "ss01";
+    overscroll-behavior: none;
+    user-select: none;
+  }
+  input,
+  textarea,
+  [contenteditable="true"] {
+    user-select: text;
+  }
+}
+
+@layer utilities {
+  /* Editor panels: flat rounded cards set apart from the window by their tone alone, no outline. */
+  .panel-card {
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+  }
+  /* Resize handles: invisible gutters between the cards that light up on hover / drag. */
+  .panel-gutter {
+    background: transparent !important;
+    width: 6px !important;
+  }
+  .panel-gutter[data-orientation='vertical'] {
+    width: 100% !important;
+    height: 6px !important;
+  }
+  .panel-gutter::before {
+    content: '';
+    position: absolute;
+    inset: 40% 2px;
+    border-radius: 9999px;
+    background: transparent;
+    transition: background 0.15s;
+  }
+  .panel-gutter[data-orientation='vertical']::before {
+    inset: 2px 45%;
+  }
+  .panel-gutter:hover::before,
+  .panel-gutter[data-state='drag']::before {
+    background: var(--brand);
+  }
+  .tabular {
+    font-variant-numeric: tabular-nums;
+  }
+  /* Small pill tags inside menus and lists ("AI", "New"). */
+  .menu-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    height: 16px;
+    padding: 0 6px;
+    border-radius: 9999px;
+    font-size: 10px;
+    font-weight: 600;
+    line-height: 1;
+    letter-spacing: 0.01em;
+    background: var(--field-hover);
+    color: var(--muted-foreground);
+  }
+  .menu-badge-new {
+    background: color-mix(in oklch, var(--role-music) 22%, transparent);
+    color: color-mix(in oklch, var(--role-music) 80%, var(--foreground));
+  }
+  /* Small muted caps-like label above a group of fields. */
+  .field-label {
+    font-size: 11px;
+    font-weight: 500;
+    color: var(--muted-foreground);
+  }
+  .hatched {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      color-mix(in oklch, var(--foreground) 8%, transparent) 0 6px,
+      transparent 6px 12px
+    );
+  }
+  /* Canvas board: dotted background that pans and scales with the board (--dot-gap / --dot-x / --dot-y set inline). */
+  .canvas-board {
+    background-color: var(--viewer-bg);
+    background-image: radial-gradient(circle, color-mix(in oklch, var(--foreground) 16%, transparent) 1px, transparent 1.2px);
+    background-size: var(--dot-gap, 24px) var(--dot-gap, 24px);
+    background-position: var(--dot-x, 0) var(--dot-y, 0);
+  }
+  /* One board item; sizes inside scale with the item (cqw), so labels stay proportional at any zoom. */
+  .canvas-item {
+    container-type: size;
+  }
+  .canvas-checker {
+    background-color: #fff;
+    background-image:
+      linear-gradient(45deg, #e5e5e5 25%, transparent 25%), linear-gradient(-45deg, #e5e5e5 25%, transparent 25%),
+      linear-gradient(45deg, transparent 75%, #e5e5e5 75%), linear-gradient(-45deg, transparent 75%, #e5e5e5 75%);
+    background-size: 24px 24px;
+    background-position: 0 0, 0 12px, 12px -12px, -12px 0;
+  }
+  .canvas-pending {
+    background: linear-gradient(110deg, var(--muted) 30%, color-mix(in oklch, var(--brand) 14%, var(--muted)) 50%, var(--muted) 70%);
+    background-size: 220% 100%;
+    animation: canvas-shimmer 1.6s linear infinite;
+    outline: 1px dashed color-mix(in oklch, var(--brand) 55%, transparent);
+    outline-offset: -1px;
+  }
+  .canvas-pending-failed {
+    animation: none;
+    background: color-mix(in oklch, var(--destructive) 8%, var(--muted));
+    outline-color: color-mix(in oklch, var(--destructive) 60%, transparent);
+  }
+  /* A picture being drawn: soft colour blobs drifting under a blur, behind the tile's text (put it in a positioned,
+     overflow-hidden box). */
+  .render-glow {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+  }
+  .render-glow::before,
+  .render-glow::after {
+    content: '';
+    position: absolute;
+    inset: -45%;
+    filter: blur(28px);
+  }
+  .render-glow::before {
+    opacity: 0.9;
+    background:
+      radial-gradient(circle at 30% 30%, oklch(0.72 0.19 295 / 0.9), transparent 42%),
+      radial-gradient(circle at 72% 38%, oklch(0.78 0.15 225 / 0.85), transparent 42%),
+      radial-gradient(circle at 45% 76%, oklch(0.82 0.15 45 / 0.85), transparent 42%);
+    animation: render-glow-a 8s ease-in-out infinite alternate;
+  }
+  .render-glow::after {
+    opacity: 0.75;
+    background:
+      radial-gradient(circle at 66% 70%, oklch(0.84 0.14 160 / 0.8), transparent 38%),
+      radial-gradient(circle at 24% 62%, oklch(0.74 0.2 350 / 0.8), transparent 38%);
+    animation: render-glow-b 11s ease-in-out infinite alternate;
+  }
+  .dark .render-glow::before {
+    opacity: 0.55;
+  }
+  .dark .render-glow::after {
+    opacity: 0.45;
+  }
+  @media (prefers-reduced-motion: reduce) {
+    .render-glow::before,
+    .render-glow::after {
+      animation: none;
+    }
+  }
+}
+
+@keyframes render-glow-a {
+  0% {
+    transform: translate(-8%, -6%) rotate(0deg) scale(1);
+  }
+  50% {
+    transform: translate(6%, 5%) rotate(120deg) scale(1.12);
+  }
+  100% {
+    transform: translate(-4%, 8%) rotate(240deg) scale(1);
+  }
+}
+
+@keyframes render-glow-b {
+  0% {
+    transform: translate(7%, 5%) rotate(0deg) scale(1.05);
+  }
+  100% {
+    transform: translate(-7%, -6%) rotate(-210deg) scale(1.2);
+  }
+}
+
+@keyframes canvas-shimmer {
+  from {
+    background-position: 120% 0;
+  }
+  to {
+    background-position: -120% 0;
+  }
+}

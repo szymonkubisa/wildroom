@@ -1,0 +1,2961 @@
+{
+ "CFGGuider": {
+  "category": "model/sampling/guiders",
+  "input": {
+   "required": {
+    "cfg": [
+     "FLOAT",
+     {
+      "default": 8.0,
+      "max": 100.0,
+      "min": 0.0,
+      "round": 0.01,
+      "step": 0.1
+     }
+    ],
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "negative": [
+     "CONDITIONING",
+     {}
+    ],
+    "positive": [
+     "CONDITIONING",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "GUIDER"
+  ],
+  "output_name": [
+   "GUIDER"
+  ]
+ },
+ "CLIPLoader": {
+  "category": "model/loaders",
+  "input": {
+   "optional": {
+    "device": [
+     [
+      "default",
+      "cpu"
+     ],
+     {
+      "advanced": true
+     }
+    ]
+   },
+   "required": {
+    "clip_name": [
+     [
+      "gemma4-12b-with-proj-ltx-2.5-bf16.safetensors",
+      "gemma4-12b-with-proj-ltx-2.5-comfy-int8-convrot.safetensors"
+     ]
+    ],
+    "type": [
+     [
+      "stable_diffusion",
+      "stable_cascade",
+      "sd3",
+      "stable_audio",
+      "mochi",
+      "ltxv",
+      "pixart",
+      "cosmos",
+      "lumina2",
+      "wan",
+      "hidream",
+      "chroma",
+      "ace",
+      "omnigen2",
+      "qwen_image",
+      "hunyuan_image",
+      "flux2",
+      "ovis",
+      "longcat_image",
+      "cogvideox",
+      "lens",
+      "pixeldit",
+      "ideogram4",
+      "boogu",
+      "krea2",
+      "joyimage",
+      "mage",
+      "minimax"
+     ]
+    ]
+   }
+  },
+  "output": [
+   "CLIP"
+  ],
+  "output_name": [
+   "CLIP"
+  ]
+ },
+ "CLIPTextEncode": {
+  "category": "model/conditioning",
+  "input": {
+   "required": {
+    "clip": [
+     "CLIP",
+     {
+      "tooltip": "The CLIP model used for encoding the text."
+     }
+    ],
+    "text": [
+     "STRING",
+     {
+      "dynamicPrompts": true,
+      "multiline": true,
+      "tooltip": "The text to be encoded."
+     }
+    ]
+   }
+  },
+  "output": [
+   "CONDITIONING"
+  ],
+  "output_name": [
+   "CONDITIONING"
+  ]
+ },
+ "ComfyMathExpression": {
+  "category": "utilities",
+  "input": {
+   "required": {
+    "expression": [
+     "STRING",
+     {
+      "default": "a + b",
+      "multiline": true
+     }
+    ],
+    "values": [
+     "COMFY_AUTOGROW_V3",
+     {
+      "template": {
+       "input": {
+        "required": {
+         "value": [
+          "FLOAT,INT,BOOLEAN",
+          {}
+         ]
+        }
+       },
+       "min": 1,
+       "names": [
+        "a",
+        "b",
+        "c",
+        "d",
+        "e",
+        "f",
+        "g",
+        "h",
+        "i",
+        "j",
+        "k",
+        "l",
+        "m",
+        "n",
+        "o",
+        "p",
+        "q",
+        "r",
+        "s",
+        "t",
+        "u",
+        "v",
+        "w",
+        "x",
+        "y",
+        "z"
+       ]
+      }
+     }
+    ]
+   }
+  },
+  "output": [
+   "FLOAT",
+   "INT",
+   "BOOLEAN"
+  ],
+  "output_name": [
+   "FLOAT",
+   "INT",
+   "BOOL"
+  ]
+ },
+ "ComfyNotNode": {
+  "category": "utilities/logic",
+  "input": {
+   "required": {
+    "value": [
+     "*",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "BOOLEAN"
+  ],
+  "output_name": [
+   "BOOLEAN"
+  ]
+ },
+ "ComfyUILTX25MSRICLoRALoader": {
+  "category": "ComfyUI-LTX2.5-MSR",
+  "input": {
+   "required": {
+    "lora_name": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "LTX-2.5-Licon-MSR-V2.safetensors",
+       "ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors",
+       "ltx-2.5-22b-ic-lora-ingredients-0.9.safetensors",
+       "ltx-2.5-22b-ic-lora-layout-to-render-1.0.safetensors",
+       "ltx-2.5-22b-ic-lora-refine-details-1.0.safetensors"
+      ]
+     }
+    ],
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "strength_model": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 100.0,
+      "min": -100.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "output": [
+   "MODEL",
+   "LTX_MSR_REFERENCE_PARAMETERS"
+  ],
+  "output_name": [
+   "model",
+   "msr_parameters"
+  ]
+ },
+ "ComfyUILTX25MSRMultiReferenceGuide": {
+  "category": "ComfyUI-LTX2.5-MSR",
+  "input": {
+   "optional": {
+    "audio_ref1": [
+     "LATENT",
+     {
+      "tooltip": "LTXV Audio VAE Encode output for pic1. Requires an AVref LoRA."
+     }
+    ],
+    "audio_ref2": [
+     "LATENT",
+     {
+      "tooltip": "LTXV Audio VAE Encode output for pic2. Leave empty to preserve its audio time window."
+     }
+    ],
+    "background": [
+     "IMAGE",
+     {}
+    ],
+    "msr_parameters": [
+     "LTX_MSR_REFERENCE_PARAMETERS",
+     {
+      "tooltip": "Optional MSR parameters from the LTX MSR IC-LoRA Loader. When omitted, references are appended as standard LTX guides without MSR slot embeddings or negative temporal offsets."
+     }
+    ],
+    "pic2": [
+     "IMAGE",
+     {}
+    ],
+    "pic3": [
+     "IMAGE",
+     {}
+    ],
+    "pic4": [
+     "IMAGE",
+     {}
+    ]
+   },
+   "required": {
+    "latent": [
+     "LATENT",
+     {}
+    ],
+    "negative": [
+     "CONDITIONING",
+     {}
+    ],
+    "pic1": [
+     "IMAGE",
+     {}
+    ],
+    "positive": [
+     "CONDITIONING",
+     {}
+    ],
+    "reference_frames": [
+     "COMBO",
+     {
+      "default": "33",
+      "multiselect": false,
+      "options": [
+       "25",
+       "33"
+      ]
+     }
+    ],
+    "strength": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 1.0,
+      "min": 0.0,
+      "step": 0.01
+     }
+    ],
+    "tile_overlap": [
+     "INT",
+     {
+      "default": 64,
+      "max": 256,
+      "min": 0,
+      "step": 16
+     }
+    ],
+    "tile_size": [
+     "INT",
+     {
+      "default": 256,
+      "max": 512,
+      "min": 0,
+      "step": 32
+     }
+    ],
+    "use_tiled_encode": [
+     "BOOLEAN",
+     {
+      "default": false
+     }
+    ],
+    "vae": [
+     "VAE",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "CONDITIONING",
+   "CONDITIONING",
+   "LATENT"
+  ],
+  "output_name": [
+   "positive",
+   "negative",
+   "latent"
+  ]
+ },
+ "CreateVideo": {
+  "category": "video",
+  "input": {
+   "optional": {
+    "audio": [
+     "AUDIO",
+     {
+      "tooltip": "The audio to add to the video."
+     }
+    ],
+    "bit_depth": [
+     "COMBO",
+     {
+      "default": "auto",
+      "multiselect": false,
+      "options": [
+       "auto",
+       8,
+       10
+      ],
+      "tooltip": "Auto uses 8-bit for sRGB and 10-bit for HDR. Explicit 8-bit and 10-bit choices are independent of colorspace."
+     }
+    ],
+    "color_space": [
+     "COMBO",
+     {
+      "default": "sRGB",
+      "multiselect": false,
+      "options": [
+       "sRGB",
+       "HDR",
+       "HDR PQ"
+      ],
+      "tooltip": "Colorspace of the input images. HDR selects BT.2020/HLG and HDR PQ selects BT.2020/PQ."
+     }
+    ]
+   },
+   "required": {
+    "fps": [
+     "FLOAT",
+     {
+      "default": 30.0,
+      "max": 120.0,
+      "min": 1.0,
+      "step": 1.0
+     }
+    ],
+    "images": [
+     "IMAGE",
+     {
+      "tooltip": "The images to create a video from."
+     }
+    ]
+   }
+  },
+  "output": [
+   "VIDEO"
+  ],
+  "output_name": [
+   "VIDEO"
+  ]
+ },
+ "EmptyLTXVLatentVideo": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "batch_size": [
+     "INT",
+     {
+      "default": 1,
+      "max": 4096,
+      "min": 1
+     }
+    ],
+    "height": [
+     "INT",
+     {
+      "default": 512,
+      "max": 16384,
+      "min": 64,
+      "step": 32
+     }
+    ],
+    "length": [
+     "INT",
+     {
+      "default": 97,
+      "max": 16384,
+      "min": 1,
+      "step": 8
+     }
+    ],
+    "width": [
+     "INT",
+     {
+      "default": 768,
+      "max": 16384,
+      "min": 64,
+      "step": 32
+     }
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "LATENT"
+  ]
+ },
+ "GetVideoComponents": {
+  "category": "video",
+  "input": {
+   "required": {
+    "video": [
+     "VIDEO",
+     {
+      "tooltip": "The video to extract components from."
+     }
+    ]
+   }
+  },
+  "output": [
+   "IMAGE",
+   "AUDIO",
+   "FLOAT",
+   "COMBO",
+   "COMBO"
+  ],
+  "output_name": [
+   "images",
+   "audio",
+   "fps",
+   "bit_depth",
+   "color_space"
+  ]
+ },
+ "ImageFromBatch": {
+  "category": "image/batch",
+  "input": {
+   "required": {
+    "batch_index": [
+     "INT",
+     {
+      "default": 0,
+      "max": 16384,
+      "min": -16384
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {}
+    ],
+    "length": [
+     "INT",
+     {
+      "default": 1,
+      "max": 4096,
+      "min": 1
+     }
+    ]
+   }
+  },
+  "output": [
+   "IMAGE"
+  ],
+  "output_name": [
+   "IMAGE"
+  ]
+ },
+ "ImageScale": {
+  "category": "image/upscaling",
+  "input": {
+   "required": {
+    "crop": [
+     [
+      "disabled",
+      "center"
+     ]
+    ],
+    "height": [
+     "INT",
+     {
+      "default": 512,
+      "max": 16384,
+      "min": 0,
+      "step": 1
+     }
+    ],
+    "image": [
+     "IMAGE"
+    ],
+    "upscale_method": [
+     [
+      "nearest-exact",
+      "bilinear",
+      "area",
+      "bicubic",
+      "lanczos"
+     ]
+    ],
+    "width": [
+     "INT",
+     {
+      "default": 512,
+      "max": 16384,
+      "min": 0,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "output": [
+   "IMAGE"
+  ],
+  "output_name": [
+   "IMAGE"
+  ]
+ },
+ "KSamplerSelect": {
+  "category": "model/sampling/samplers",
+  "input": {
+   "required": {
+    "sampler_name": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "euler",
+       "euler_cfg_pp",
+       "euler_ancestral",
+       "euler_ancestral_cfg_pp",
+       "heun",
+       "heunpp2",
+       "exp_heun_2_x0",
+       "exp_heun_2_x0_sde",
+       "dpm_2",
+       "dpm_2_ancestral",
+       "lms",
+       "dpm_fast",
+       "dpm_adaptive",
+       "dpmpp_2s_ancestral",
+       "dpmpp_2s_ancestral_cfg_pp",
+       "dpmpp_sde",
+       "dpmpp_sde_gpu",
+       "dpmpp_2m",
+       "dpmpp_2m_cfg_pp",
+       "dpmpp_2m_sde",
+       "dpmpp_2m_sde_gpu",
+       "dpmpp_2m_sde_heun",
+       "dpmpp_2m_sde_heun_gpu",
+       "dpmpp_3m_sde",
+       "dpmpp_3m_sde_gpu",
+       "ddpm",
+       "lcm",
+       "ipndm",
+       "ipndm_v",
+       "deis",
+       "cfgpp_ud10_ab",
+       "res_multistep",
+       "res_multistep_cfg_pp",
+       "res_multistep_ancestral",
+       "res_multistep_ancestral_cfg_pp",
+       "gradient_estimation",
+       "gradient_estimation_cfg_pp",
+       "er_sde",
+       "seeds_2",
+       "seeds_3",
+       "sa_solver",
+       "sa_solver_pece",
+       "ddim",
+       "uni_pc",
+       "uni_pc_bh2"
+      ]
+     }
+    ]
+   }
+  },
+  "output": [
+   "SAMPLER"
+  ],
+  "output_name": [
+   "SAMPLER"
+  ]
+ },
+ "LTXAddVideoICLoRAGuide": {
+  "category": "Lightricks/IC-LoRA",
+  "input": {
+   "optional": {
+    "tile_frames": [
+     "INT",
+     {
+      "default": 97,
+      "max": 1000,
+      "min": 0,
+      "step": 1,
+      "tooltip": "Window length in pixel frames, used only when use_streaming is on. Snapped to 8n+1. Must match LTXVTiledFusionSampler. Ignored when use_streaming is off."
+     }
+    ],
+    "use_streaming": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "tooltip": "Off (default): encode the whole clip as one IC-LoRA guide. On: re-encode one fresh guide per LTXVTiledFusionSampler temporal window and write the plan the sampler reads. Set tile_frames on this node and the sampler to the same value (97 for LTX)."
+     }
+    ]
+   },
+   "required": {
+    "crop": [
+     "COMBO",
+     {
+      "default": "disabled",
+      "multiselect": false,
+      "options": [
+       "disabled",
+       "center"
+      ],
+      "tooltip": "Crop mode when resizing. 'center' crops to fit, 'disabled' stretches to fit."
+     }
+    ],
+    "frame_idx": [
+     "INT",
+     {
+      "default": 0,
+      "max": 9999,
+      "min": -9999,
+      "tooltip": "RoPE position of the reference, in pixel frames.\n0 aligns the reference with the generated clip. Use for video references.\n>0 places the reference at a specific pixel-frame position in the clip.\n-1 places the reference outside the generated frame range, while still using it for attention conditioning. Use for single-image references.\nFor multi-frame references, >0 values are rounded down to 1 mod 8."
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {}
+    ],
+    "latent": [
+     "LATENT",
+     {
+      "tooltip": "Video-only latent to condition. Must be a 5D video latent (batch, channels, frames, height, width)."
+     }
+    ],
+    "latent_downscale_factor": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 10.0,
+      "min": 1.0,
+      "step": 1.0,
+      "tooltip": "For IC-LoRA on small grid. 1 means original size, 2 means half size, 3 means third, etc."
+     }
+    ],
+    "negative": [
+     "CONDITIONING",
+     {}
+    ],
+    "positive": [
+     "CONDITIONING",
+     {}
+    ],
+    "strength": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 1.0,
+      "min": 0.0,
+      "step": 0.01
+     }
+    ],
+    "tile_overlap": [
+     "INT",
+     {
+      "default": 64,
+      "max": 256,
+      "min": 16,
+      "step": 16,
+      "tooltip": "Overlap between tiles for tiled encoding. Only used when use_tiled_encode is enabled."
+     }
+    ],
+    "tile_size": [
+     "INT",
+     {
+      "default": 256,
+      "max": 512,
+      "min": 64,
+      "step": 32,
+      "tooltip": "Spatial tile size for tiled encoding. Only used when use_tiled_encode is enabled."
+     }
+    ],
+    "use_tiled_encode": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "tooltip": "Enable tiled VAE encoding for large resolutions/long videos to reduce memory usage."
+     }
+    ],
+    "vae": [
+     "VAE",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "CONDITIONING",
+   "CONDITIONING",
+   "LATENT"
+  ],
+  "output_name": [
+   "positive",
+   "negative",
+   "latent"
+  ]
+ },
+ "LTXFloatToInt": {
+  "category": "math/conversion",
+  "input": {
+   "required": {
+    "a": [
+     "FLOAT",
+     {
+      "default": 0.0
+     }
+    ]
+   }
+  },
+  "output": [
+   "INT"
+  ],
+  "output_name": [
+   "INT"
+  ]
+ },
+ "LTXICLoRALoaderModelOnly": {
+  "category": "Lightricks/IC-LoRA",
+  "input": {
+   "required": {
+    "lora_name": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "LTX-2.5-Licon-MSR-V2.safetensors",
+       "ltx-2.3-22b-ic-lora-union-control-ref0.5.safetensors",
+       "ltx-2.5-22b-ic-lora-ingredients-0.9.safetensors",
+       "ltx-2.5-22b-ic-lora-layout-to-render-1.0.safetensors",
+       "ltx-2.5-22b-ic-lora-refine-details-1.0.safetensors"
+      ]
+     }
+    ],
+    "model": [
+     "MODEL",
+     {}
+    ],
+    "strength_model": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 100.0,
+      "min": -100.0,
+      "step": 0.01
+     }
+    ]
+   }
+  },
+  "output": [
+   "MODEL",
+   "FLOAT"
+  ],
+  "output_name": [
+   "model",
+   "latent_downscale_factor"
+  ]
+ },
+ "LTXVAddGuide": {
+  "category": "model/conditioning/ltxv",
+  "input": {
+   "optional": {
+    "attention_mask": [
+     "MASK",
+     {
+      "tooltip": "Optional pixel-space spatial mask. Controls per-region conditioning influence via self-attention, multiplied by strength."
+     }
+    ],
+    "iclora_parameters": [
+     "IC_LORA_PARAMETERS",
+     {
+      "tooltip": "Optional IC-LoRA parameters from a Get IC-LoRA Parameters node. Used for adjusting guide processing as required by certain IC-LoRAs (eg. those with a reference_downscale_factor > 1). When chained, each LTXVAddGuide uses only the parameters connected to it."
+     }
+    ]
+   },
+   "required": {
+    "frame_idx": [
+     "INT",
+     {
+      "default": 0,
+      "max": 9999,
+      "min": -9999,
+      "tooltip": "Frame index to start the conditioning at. For single-frame images or videos with 1-8 frames, any frame_idx value is acceptable. For videos with 9+ frames, frame_idx must be divisible by 8, otherwise it will be rounded down to the nearest multiple of 8. Negative values are counted from the end of the video."
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {
+      "tooltip": "Image or video to condition the latent video on. Must be 8*n + 1 frames. If the video is not 8*n + 1 frames, it will be cropped to the nearest 8*n + 1 frames."
+     }
+    ],
+    "latent": [
+     "LATENT",
+     {}
+    ],
+    "negative": [
+     "CONDITIONING",
+     {}
+    ],
+    "positive": [
+     "CONDITIONING",
+     {}
+    ],
+    "strength": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 10.0,
+      "min": 0.0,
+      "step": 0.01
+     }
+    ],
+    "vae": [
+     "VAE",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "CONDITIONING",
+   "CONDITIONING",
+   "LATENT"
+  ],
+  "output_name": [
+   "positive",
+   "negative",
+   "latent"
+  ]
+ },
+ "LTXVAudioVAEDecode": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "audio_vae": [
+     "VAE",
+     {
+      "display_name": "Audio VAE",
+      "tooltip": "The Audio VAE model used for decoding the latent."
+     }
+    ],
+    "samples": [
+     "LATENT",
+     {
+      "tooltip": "The latent to be decoded."
+     }
+    ]
+   }
+  },
+  "output": [
+   "AUDIO"
+  ],
+  "output_name": [
+   "Audio"
+  ]
+ },
+ "LTXVAudioVAEEncode": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "audio": [
+     "AUDIO",
+     {
+      "tooltip": "The audio to be encoded."
+     }
+    ],
+    "audio_vae": [
+     "VAE",
+     {
+      "display_name": "Audio VAE",
+      "tooltip": "The Audio VAE model to use for encoding."
+     }
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "Audio Latent"
+  ]
+ },
+ "LTXVConcatAVLatent": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "audio_latent": [
+     "LATENT",
+     {}
+    ],
+    "video_latent": [
+     "LATENT",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "latent"
+  ]
+ },
+ "LTXVConditioning": {
+  "category": "model/conditioning/ltxv",
+  "input": {
+   "required": {
+    "frame_rate": [
+     "FLOAT",
+     {
+      "default": 25.0,
+      "max": 1000.0,
+      "min": 0.0,
+      "step": 0.01
+     }
+    ],
+    "negative": [
+     "CONDITIONING",
+     {}
+    ],
+    "positive": [
+     "CONDITIONING",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "CONDITIONING",
+   "CONDITIONING"
+  ],
+  "output_name": [
+   "positive",
+   "negative"
+  ]
+ },
+ "LTXVCropGuides": {
+  "category": "model/conditioning/ltxv",
+  "input": {
+   "required": {
+    "latent": [
+     "LATENT",
+     {}
+    ],
+    "negative": [
+     "CONDITIONING",
+     {}
+    ],
+    "positive": [
+     "CONDITIONING",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "CONDITIONING",
+   "CONDITIONING",
+   "LATENT"
+  ],
+  "output_name": [
+   "positive",
+   "negative",
+   "latent"
+  ]
+ },
+ "LTXVEmptyLatentAudio": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "audio_vae": [
+     "VAE",
+     {
+      "display_name": "Audio VAE",
+      "tooltip": "The Audio VAE model to get configuration from."
+     }
+    ],
+    "batch_size": [
+     "INT",
+     {
+      "default": 1,
+      "display": "number",
+      "max": 4096,
+      "min": 1,
+      "tooltip": "The number of latent audio samples in the batch."
+     }
+    ],
+    "frame_rate": [
+     "FLOAT,INT",
+     {
+      "default": 25.0,
+      "display": "number",
+      "max": 1000.0,
+      "min": 1.0,
+      "step": 0.01,
+      "tooltip": "Number of frames per second.",
+      "widgetType": "FLOAT"
+     }
+    ],
+    "frames_number": [
+     "INT",
+     {
+      "default": 97,
+      "display": "number",
+      "max": 1000,
+      "min": 1,
+      "step": 1,
+      "tooltip": "Number of frames."
+     }
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "Latent"
+  ]
+ },
+ "LTXVGetTilingSizes": {
+  "category": "ltxvideo",
+  "input": {
+   "optional": {
+    "image": [
+     "IMAGE",
+     {
+      "tooltip": "Optional video/image batch. When connected, width, height, and frame_count are taken from it (Get Image Size style)."
+     }
+    ]
+   },
+   "required": {
+    "frame_count": [
+     "INT",
+     {
+      "default": 97,
+      "max": 10000,
+      "min": 1,
+      "tooltip": "Source frame count. tile_frames is 8n+1, 97 or less, or up to 121 when that avoids temporal chunking."
+     }
+    ],
+    "height": [
+     "INT",
+     {
+      "default": 1080,
+      "max": 16384,
+      "min": 1,
+      "tooltip": "Source height in pixels."
+     }
+    ],
+    "initial_canvas_size": [
+     [
+      "qHD",
+      "HD",
+      "FullHD"
+     ],
+     {
+      "default": "FullHD",
+      "tooltip": "Stage-1 canvas long-edge (same choices as tile size). Source within 200px of FullHD is kept instead of rescaled."
+     }
+    ],
+    "output_size": [
+     [
+      "FullHD",
+      "4K",
+      "8K"
+     ],
+     {
+      "default": "FullHD",
+      "tooltip": "Final canvas. FullHD is the 1920 long-edge step; 4K is 2\u00d7 that; 8K is 4\u00d7. Single-stage graphs use this as the canvas. Two-stage graphs use initial canvas for stage 1 and this for stage 2."
+     }
+    ],
+    "tile_size": [
+     [
+      "qHD",
+      "HD",
+      "FullHD"
+     ],
+     {
+      "default": "FullHD",
+      "tooltip": "Spatial tile long-edge. qHD=960, HD=1280, FullHD=1920. Clamped to the initial canvas so a FullHD tile on a smaller canvas does not force tiling."
+     }
+    ],
+    "width": [
+     "INT",
+     {
+      "default": 1920,
+      "max": 16384,
+      "min": 1,
+      "tooltip": "Source width in pixels (from Load Video / Get Image Size)."
+     }
+    ]
+   }
+  },
+  "output": [
+   "INT",
+   "INT",
+   "INT",
+   "INT",
+   "INT",
+   "INT",
+   "FLOAT",
+   "INT",
+   "BOOLEAN",
+   "STRING"
+  ],
+  "output_name": [
+   "initial_canvas_width",
+   "initial_canvas_height",
+   "tile_width",
+   "tile_height",
+   "output_width",
+   "output_height",
+   "overlap_frac",
+   "tile_frames",
+   "is_8k",
+   "summary"
+  ]
+ },
+ "LTXVImgToVideoInplace": {
+  "category": "model/conditioning/ltxv",
+  "input": {
+   "required": {
+    "bypass": [
+     "BOOLEAN",
+     {
+      "default": false,
+      "tooltip": "Bypass the conditioning."
+     }
+    ],
+    "image": [
+     "IMAGE",
+     {}
+    ],
+    "latent": [
+     "LATENT",
+     {}
+    ],
+    "strength": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 1.0,
+      "min": 0.0
+     }
+    ],
+    "vae": [
+     "VAE",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "latent"
+  ]
+ },
+ "LTXVLatentUpsampler": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "samples": [
+     "LATENT",
+     {}
+    ],
+    "upscale_model": [
+     "LATENT_UPSCALE_MODEL",
+     {}
+    ],
+    "vae": [
+     "VAE",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "LATENT"
+  ]
+ },
+ "LTXVPreprocess": {
+  "category": "video/preprocessors",
+  "input": {
+   "required": {
+    "image": [
+     "IMAGE",
+     {}
+    ],
+    "img_compression": [
+     "INT",
+     {
+      "default": 35,
+      "max": 100,
+      "min": 0,
+      "tooltip": "Amount of compression to apply on image."
+     }
+    ]
+   }
+  },
+  "output": [
+   "IMAGE"
+  ],
+  "output_name": [
+   "output_image"
+  ]
+ },
+ "LTXVSeparateAVLatent": {
+  "category": "model/latent/ltxv",
+  "input": {
+   "required": {
+    "av_latent": [
+     "LATENT",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "LATENT",
+   "LATENT"
+  ],
+  "output_name": [
+   "video_latent",
+   "audio_latent"
+  ]
+ },
+ "LTXVTiledFusionSampler": {
+  "category": "sampling",
+  "input": {
+   "optional": {
+    "canvas_device": [
+     [
+      "auto",
+      "gpu",
+      "cpu"
+     ],
+     {
+      "default": "auto",
+      "tooltip": "Where to keep the full-canvas tensors and cached tile latents/noise/masks. auto = GPU if there is enough free memory, otherwise CPU. Processed conds stay on the GPU."
+     }
+    ],
+    "vae": [
+     "VAE",
+     {
+      "tooltip": "Used to read the model's temporal and spatial downscale factors. If omitted, they are taken from the diffusion model (LTX defaults: 8 frames and 32 pixels per latent cell)."
+     }
+    ]
+   },
+   "required": {
+    "blend_var": [
+     "FLOAT",
+     {
+      "default": 0.05,
+      "max": 0.2,
+      "min": 0.01,
+      "step": 0.01,
+      "tooltip": "Variance of the Gaussian blend weights in the overlaps. Leave at 0.05 unless you are measuring seams."
+     }
+    ],
+    "cfg": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 20.0,
+      "min": 0.0,
+      "step": 0.1,
+      "tooltip": "Classifier-free guidance scale. Distilled models typically use 1.0."
+     }
+    ],
+    "grid_cycle": [
+     "INT",
+     {
+      "default": 1,
+      "max": 4,
+      "min": 1,
+      "tooltip": "Cycle shifted tile grids across steps. 1 = fixed grid (cheapest), 4 = thorough. Spatial only: cycling the temporal grid slides content in time."
+     }
+    ],
+    "latents": [
+     "LATENT",
+     {
+      "tooltip": "The latent RETURNED BY the IC-LoRA guide node (it carries appended guide frames plus the noise mask). A bare empty video latent will not work."
+     }
+    ],
+    "model": [
+     "MODEL",
+     {
+      "tooltip": "The diffusion model to use."
+     }
+    ],
+    "negative": [
+     "CONDITIONING",
+     {
+      "tooltip": "Negative conditioning from the IC-LoRA guide node."
+     }
+    ],
+    "overlap_frac": [
+     "FLOAT",
+     {
+      "default": 0.5,
+      "max": 0.75,
+      "min": 0.25,
+      "step": 0.05,
+      "tooltip": "Fraction of each tile overlapping its neighbor. Stay at 0.5 or above: below that a periodic grid appears on structured content."
+     }
+    ],
+    "positive": [
+     "CONDITIONING",
+     {
+      "tooltip": "Positive conditioning from the IC-LoRA guide node. Must carry keyframe_idxs / guide_attention_entries so each tile can be cropped to the LoRA's trained window."
+     }
+    ],
+    "sampler": [
+     "SAMPLER",
+     {
+      "tooltip": "From KSamplerSelect (same type as SamplerCustomAdvanced). Discrete step samplers only: euler, euler_ancestral, heun, dpm_2, \u2026 History methods (DPM++ 2M, LMS) lose their multi-step memory because fusion owns the loop. Adaptive samplers cannot fuse. Ancestral methods add independent noise per tile and can seam."
+     }
+    ],
+    "seed": [
+     "INT",
+     {
+      "control_after_generate": true,
+      "default": 42,
+      "max": 18446744073709551615,
+      "min": 0,
+      "tooltip": "Seed for the single shared noise field across all tiles."
+     }
+    ],
+    "sigmas": [
+     "SIGMAS",
+     {
+      "tooltip": "Denoise schedule. Must be descending and end at 0. Fusion walks this list one step at a time."
+     }
+    ],
+    "tile_frames": [
+     "INT",
+     {
+      "default": 0,
+      "max": 1000,
+      "min": 0,
+      "step": 1,
+      "tooltip": "Temporal window in pixel frames (97 for LTX). 0 = one extent. Other values are snapped to 8n+1. >0 needs LTXAddVideoICLoRAGuide with use_streaming on and the SAME tile_frames: that re-encodes a fresh guide per window and writes the plan this sampler reads. A whole-clip guide cannot be sliced, and windowing is disabled if the plan is missing."
+     }
+    ],
+    "tile_height": [
+     "INT",
+     {
+      "default": 576,
+      "max": 4096,
+      "min": 256,
+      "step": 32,
+      "tooltip": "Tile height in pixels, multiple of 32. Match tile_width to the IC-LoRA's trained spatial window."
+     }
+    ],
+    "tile_width": [
+     "INT",
+     {
+      "default": 1024,
+      "max": 4096,
+      "min": 256,
+      "step": 32,
+      "tooltip": "Tile width in pixels, multiple of 32. Set this to the IC-LoRA's trained spatial window. Tiles smaller than the trained window make every tile see content at the wrong scale."
+     }
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "output"
+  ]
+ },
+ "LatentUpscaleModelLoader": {
+  "category": "model/loaders",
+  "input": {
+   "required": {
+    "model_name": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "ltx-2.5-latent-spatial-upscaler-x2-bf16-1.0.safetensors",
+       "ltx-2.5-latent-temporal-upscaler-x2-bf16-1.0.safetensors"
+      ]
+     }
+    ]
+   }
+  },
+  "output": [
+   "LATENT_UPSCALE_MODEL"
+  ],
+  "output_name": [
+   "LATENT_UPSCALE_MODEL"
+  ]
+ },
+ "LoadAudio": {
+  "category": "audio",
+  "input": {
+   "required": {
+    "audio": [
+     "COMBO",
+     {
+      "audio_upload": true,
+      "multiselect": false,
+      "options": [
+       "studio_0eIr-NV5CWxx_voice1.mp3",
+       "studio_0eIr-NV5CWxx_voice2.mp3",
+       "studio_3nSXzPaZ9uxq_voice1.mp3",
+       "studio_3nSXzPaZ9uxq_voice2.mp3",
+       "studio_4Fl_vITBtdSb_voice1.mp3",
+       "studio_4Fl_vITBtdSb_voice2.mp3",
+       "studio_7IAkc-mO-XKq_audio.wav",
+       "studio_8Cd_YcPgRruh_voice1.mp3",
+       "studio_8Cd_YcPgRruh_voice2.mp3",
+       "studio_AjLmgh_h-JR9_voice1.mp3",
+       "studio_AjLmgh_h-JR9_voice2.mp3",
+       "studio_HN8glWV4h2kT_audio.wav",
+       "studio_HQ5LFZEIqxj__guide.mp4",
+       "studio_Jn0TnPIEHfP3_audio.wav",
+       "studio_Karptutterck_voice1.mp3",
+       "studio_Karptutterck_voice2.mp3",
+       "studio_LXxxr2-4zDQ9_voice1.mp3",
+       "studio_LXxxr2-4zDQ9_voice2.mp3",
+       "studio_NyyD1L6sgna-_voice1.mp3",
+       "studio_NyyD1L6sgna-_voice2.mp3",
+       "studio_Uz53uDxq6aKl_voice1.mp3",
+       "studio_Uz53uDxq6aKl_voice2.mp3",
+       "studio__8HnY1XQ5-Bl_audio.wav",
+       "studio_b9W8APkri5SM_guide.mp4",
+       "studio_e-YhgnvG2Tof_voice1.mp3",
+       "studio_e-YhgnvG2Tof_voice2.mp3",
+       "studio_i45jdmhhTv1x_guide.mp4",
+       "studio_k7hYnVSPKD6g_audio.wav",
+       "studio_lQejkxnefbmm_voice1.mp3",
+       "studio_lQejkxnefbmm_voice2.mp3",
+       "studio_pBpjxX9YYppQ_audio.wav",
+       "studio_tQcN1i5utTDQ_audio.wav",
+       "studio_zuPZLZty751j_voice1.mp3",
+       "studio_zuPZLZty751j_voice2.mp3"
+      ]
+     }
+    ]
+   }
+  },
+  "output": [
+   "AUDIO"
+  ],
+  "output_name": [
+   "AUDIO"
+  ]
+ },
+ "LoadImage": {
+  "category": "image",
+  "input": {
+   "required": {
+    "image": [
+     [
+      "example.png",
+      "studio_-iko-y96_qQw_start.png",
+      "studio_-omaiWH-KpaM_start.png",
+      "studio_0VQuuzEbqDcZ_end.jpg",
+      "studio_0VQuuzEbqDcZ_start.jpg",
+      "studio_0eIr-NV5CWxx_ref1.png",
+      "studio_0eIr-NV5CWxx_ref2.png",
+      "studio_1SDt9NyUYec3_location.jpg",
+      "studio_1SDt9NyUYec3_ref1.jpg",
+      "studio_1l5lb39beL6H_ref1.png",
+      "studio_1l5lb39beL6H_ref2.png",
+      "studio_2IrkGF3KJ4Va_start.png",
+      "studio_2tr3yVfiFeVl_start.png",
+      "studio_2uoEDKFaOzkT_location.png",
+      "studio_2uoEDKFaOzkT_ref1.png",
+      "studio_2uoEDKFaOzkT_ref2.png",
+      "studio_3nSXzPaZ9uxq_location.png",
+      "studio_3nSXzPaZ9uxq_ref1.png",
+      "studio_3nSXzPaZ9uxq_ref2.png",
+      "studio_4EnvOPrURRNw_ref1.png",
+      "studio_4EnvOPrURRNw_ref2.png",
+      "studio_4Fl_vITBtdSb_ref1.png",
+      "studio_4Fl_vITBtdSb_ref2.png",
+      "studio_4LuPK3UGg3LU_end.jpg",
+      "studio_4LuPK3UGg3LU_start.jpg",
+      "studio_4jE4-aUS6YBp_location.jpg",
+      "studio_4jE4-aUS6YBp_ref1.jpg",
+      "studio_4jE4-aUS6YBp_ref2.jpg",
+      "studio_4jE4-aUS6YBp_ref3.jpg",
+      "studio_4xMYrFzR2P_Q_location.jpg",
+      "studio_4xMYrFzR2P_Q_ref1.jpg",
+      "studio_4xMYrFzR2P_Q_ref2.jpg",
+      "studio_5Aoubc_BK5o6_ref1.png",
+      "studio_5Aoubc_BK5o6_ref2.png",
+      "studio_5DcM5eLYfPum_mid1.png",
+      "studio_5DcM5eLYfPum_mid2.png",
+      "studio_5DcM5eLYfPum_start.png",
+      "studio_5SWhcFfCO50C_start.png",
+      "studio_6QQbaWyh986Y_start.png",
+      "studio_6pDrC4lAOBvu_start.png",
+      "studio_7DzR_WF8qbWi_start.png",
+      "studio_7IAkc-mO-XKq_start.png",
+      "studio_80pCh-_U2g0c_start.png",
+      "studio_8Cd_YcPgRruh_ref1.png",
+      "studio_8Cd_YcPgRruh_ref2.png",
+      "studio_8FPOcPgJebkn_start.jpg",
+      "studio_8ZLPDia-Dfyu_start.jpg",
+      "studio_8eHkwY_xo0YG_location.png",
+      "studio_8eHkwY_xo0YG_ref1.png",
+      "studio_8eHkwY_xo0YG_ref2.png",
+      "studio_8eHkwY_xo0YG_ref3.png",
+      "studio_9Sx-TtoXlxeR_start.jpg",
+      "studio_ASkC3FCDv2jH_location.jpg",
+      "studio_ASkC3FCDv2jH_ref1.png",
+      "studio_A_Ouk1Q5lO2d_start.jpg",
+      "studio_Ah3i1YSEI3x4_start.png",
+      "studio_AjLmgh_h-JR9_location.png",
+      "studio_AjLmgh_h-JR9_ref1.png",
+      "studio_AjLmgh_h-JR9_ref2.png",
+      "studio_At23f8aSvrMJ_start.png",
+      "studio_B3Lpvbgbgq-q_start.png",
+      "studio_ByglfLQYJdbg_mid1.jpg",
+      "studio_ByglfLQYJdbg_mid2.jpg",
+      "studio_ByglfLQYJdbg_ref1.jpg",
+      "studio_ByglfLQYJdbg_ref2.jpg",
+      "studio_ByglfLQYJdbg_ref3.jpg",
+      "studio_C3L6v_UQGjbK_start.png",
+      "studio_CAMxiZikTn0h_start.png",
+      "studio_CgzBqntT781i_start.png",
+      "studio_D_iHOxROxGTa_start.png",
+      "studio_F3azOd-V48cZ_start.jpg",
+      "studio_FoJFdUs7aWJw_ref1.jpg",
+      "studio_G21zyFjUg8aI_start.png",
+      "studio_HN8glWV4h2kT_start.png",
+      "studio_HQ5LFZEIqxj__start.jpg",
+      "studio_Iont-oVlz1v0_location.jpg",
+      "studio_Iont-oVlz1v0_ref1.jpg",
+      "studio_Iont-oVlz1v0_ref2.jpg",
+      "studio_Iqp7R3n5nMlr_location.jpeg",
+      "studio_Iqp7R3n5nMlr_ref1.png",
+      "studio_Iqp7R3n5nMlr_ref2.png",
+      "studio_IygvFGpmoUAO.png",
+      "studio_Jn0TnPIEHfP3_start.png",
+      "studio_Karptutterck_location.png",
+      "studio_Karptutterck_ref1.png",
+      "studio_Karptutterck_ref2.png",
+      "studio_KeDQMv1A0qio_location.jpg",
+      "studio_KeDQMv1A0qio_ref1.jpg",
+      "studio_KeDQMv1A0qio_ref2.jpg",
+      "studio_L1O66YpfUJMI_location.jpg",
+      "studio_L1O66YpfUJMI_ref1.jpg",
+      "studio_L4CvIlTh-8w7_start.png",
+      "studio_LXxxr2-4zDQ9_location.png",
+      "studio_LXxxr2-4zDQ9_ref1.png",
+      "studio_LXxxr2-4zDQ9_ref2.png",
+      "studio_LYgQTBNXinXM_start.jpg",
+      "studio_M28OMHZ6mlQV_location.jpg",
+      "studio_M28OMHZ6mlQV_ref1.jpg",
+      "studio_M28OMHZ6mlQV_ref2.jpg",
+      "studio_M28OMHZ6mlQV_ref3.jpg",
+      "studio_M43c8dcVQDDQ.png",
+      "studio_M7kNbw3crZkm_start.png",
+      "studio_NyyD1L6sgna-_ref1.png",
+      "studio_NyyD1L6sgna-_ref2.png",
+      "studio_PRXs5rTEH95L_location.jpg",
+      "studio_PRXs5rTEH95L_ref1.jpg",
+      "studio_PRXs5rTEH95L_ref2.jpg",
+      "studio_QAKL6Ks5oAuM_ref1.png",
+      "studio_QAKL6Ks5oAuM_ref2.png",
+      "studio_QlhPbOHUm8oL_end.jpg",
+      "studio_QlhPbOHUm8oL_start.jpg",
+      "studio_RPg8PR1hlpIr_start.png",
+      "studio_RlFksGPIFRgs_start.jpg",
+      "studio_RuDezUh2ejRq_location.jpeg",
+      "studio_RuDezUh2ejRq_ref1.png",
+      "studio_RuDezUh2ejRq_ref2.png",
+      "studio_TPpKkKozXxm7_start.png",
+      "studio_TsRKlFpM2SV6_start.png",
+      "studio_U0Wd6-yRIILC_start.png",
+      "studio_UIAvhcQTSWNo_start.png",
+      "studio_UVX7WEXBxA6z_start.png",
+      "studio_Uz53uDxq6aKl_location.png",
+      "studio_Uz53uDxq6aKl_ref1.png",
+      "studio_Uz53uDxq6aKl_ref2.png",
+      "studio_VKS8YfPu94gU_mid1.jpg",
+      "studio_VKS8YfPu94gU_mid2.jpg",
+      "studio_VKS8YfPu94gU_ref1.jpg",
+      "studio_VKS8YfPu94gU_ref2.jpg",
+      "studio_VKS8YfPu94gU_ref3.jpg",
+      "studio_WdNoBH-i25xd_start.jpg",
+      "studio_Wn26A_rRzPrE_location.jpeg",
+      "studio_Wn26A_rRzPrE_ref1.png",
+      "studio_Wn26A_rRzPrE_ref2.png",
+      "studio_WrNQAb7topvD_start.png",
+      "studio_X1p7jGsdJnIn_location.png",
+      "studio_X1p7jGsdJnIn_ref1.png",
+      "studio_X1p7jGsdJnIn_ref2.png",
+      "studio_X1p7jGsdJnIn_ref3.png",
+      "studio_X6hvlwvck5zm_start.png",
+      "studio_XRgKTaUExZNB_mid1.png",
+      "studio_XRgKTaUExZNB_mid2.png",
+      "studio_XRgKTaUExZNB_start.png",
+      "studio_YkBwq2-pZzjv_start.png",
+      "studio_YqO4s8g4YCAE_start.png",
+      "studio_Yw7i8NJZlzLA_location.jpg",
+      "studio_Yw7i8NJZlzLA_ref1.jpg",
+      "studio_Z4b4SzWKTQYf_start.jpg",
+      "studio_ZOyo9sGw4SJB_start.png",
+      "studio_ZhA2wFYCJzX1_start.png",
+      "studio_ZtQdgzSfX4km_mid1.png",
+      "studio_ZtQdgzSfX4km_ref1.png",
+      "studio_ZtQdgzSfX4km_ref2.png",
+      "studio_ZtQdgzSfX4km_start.png",
+      "studio__8HnY1XQ5-Bl_start.png",
+      "studio__Si2f9ETR3yE_mid1.png",
+      "studio__Si2f9ETR3yE_start.png",
+      "studio__TdCRIB75kpF_end.jpg",
+      "studio__TdCRIB75kpF_start.jpg",
+      "studio__laagwtGY0hU_start.png",
+      "studio__v2fiAl7plrQ_start.png",
+      "studio_a2Dq9ZwtpZ89_location.jpg",
+      "studio_a2Dq9ZwtpZ89_ref1.jpg",
+      "studio_a2Dq9ZwtpZ89_ref2.jpg",
+      "studio_a2Dq9ZwtpZ89_ref3.jpg",
+      "studio_a4mZhsGGCxbC_start.jpg",
+      "studio_a5RGlbbq_dMR_start.jpg",
+      "studio_a5irASMlrXaf_ref1.png",
+      "studio_a5irASMlrXaf_ref2.png",
+      "studio_aQ_C9em2DMlF_start.jpg",
+      "studio_b9W8APkri5SM_start.jpg",
+      "studio_bYWyFEX80ACN_start.jpg",
+      "studio_cDMAdhJ2byQn_end.jpg",
+      "studio_cDMAdhJ2byQn_start.jpg",
+      "studio_cc80StF6izmV_start.png",
+      "studio_e-YhgnvG2Tof_location.png",
+      "studio_e-YhgnvG2Tof_ref1.png",
+      "studio_e-YhgnvG2Tof_ref2.png",
+      "studio_eC9x1tSbskPw_start.png",
+      "studio_eKzXXan5fK5p_ref1.png",
+      "studio_eKzXXan5fK5p_ref2.png",
+      "studio_fBk6ILiCC3TA_start.png",
+      "studio_fZHu3_1c3SAz_start.png",
+      "studio_gpak-Q5KrvpS_start.png",
+      "studio_h2bf3FCYfQDe_start.png",
+      "studio_hKQi7AJdOpje_start.png",
+      "studio_hUcUer5C0GJo_start.png",
+      "studio_hW4H9EG-_DNl_location.jpg",
+      "studio_hW4H9EG-_DNl_ref1.jpg",
+      "studio_i5Efd-Kw3W9U_end.jpg",
+      "studio_i5Efd-Kw3W9U_start.jpg",
+      "studio_iEXOWwA1A-qb_end.jpg",
+      "studio_iEXOWwA1A-qb_start.jpg",
+      "studio_iWZ6JeYNLGFf_start.png",
+      "studio_jI6EN5FiJSSt_mid1.jpg",
+      "studio_jI6EN5FiJSSt_ref1.jpg",
+      "studio_jLN0ey5Fr3y8_start.jpg",
+      "studio_k7hYnVSPKD6g_start.png",
+      "studio_kDh-TbumPadP_mid1.jpg",
+      "studio_kDh-TbumPadP_mid2.jpg",
+      "studio_kDh-TbumPadP_ref1.jpg",
+      "studio_l-GKPEgO0kQn_location.jpg",
+      "studio_l-GKPEgO0kQn_ref1.jpg",
+      "studio_lQejkxnefbmm_location.png",
+      "studio_lQejkxnefbmm_ref1.png",
+      "studio_lQejkxnefbmm_ref2.png",
+      "studio_mXBSNyh--HkM_start.png",
+      "studio_nS3Efaxy-Thb_start.png",
+      "studio_nVhpFszVdIO0_start.jpg",
+      "studio_pBpjxX9YYppQ_start.png",
+      "studio_q2V_kh9iLnCk_start.png",
+      "studio_qC2q6UHYeOGS_end.jpg",
+      "studio_qC2q6UHYeOGS_start.jpg",
+      "studio_q_Rtl4ddDqLh_start.png",
+      "studio_rJk9HFcAscOn_start.jpg",
+      "studio_rKHb7kStlfO3_end.jpg",
+      "studio_rKHb7kStlfO3_start.jpg",
+      "studio_rax35s4UCAyc_ref1.jpg",
+      "studio_swIbB4uBTI7r_start.png",
+      "studio_t13Z_6x6jf5C_start.jpg",
+      "studio_t4hZ_76vsacV_end.jpg",
+      "studio_t4hZ_76vsacV_start.jpg",
+      "studio_tQcN1i5utTDQ_start.png",
+      "studio_test_start.jpg",
+      "studio_toTvvNBJX6DH_start.png",
+      "studio_uGza83ljUMCS_start.png",
+      "studio_uoqelu2aYiKs_start.jpg",
+      "studio_vPP9oKMrSazY_location.jpeg",
+      "studio_vPP9oKMrSazY_ref1.png",
+      "studio_vdyYQbmBs3Ei_start.png",
+      "studio_vuG1yAV53t5s_location.jpeg",
+      "studio_vuG1yAV53t5s_ref1.png",
+      "studio_vuG1yAV53t5s_ref2.png",
+      "studio_wE0uqLXuS3df_start.png",
+      "studio_wSz51gBZefcA_ref1.png",
+      "studio_wSz51gBZefcA_ref2.png",
+      "studio_wYlMcDBydHxs_location.jpg",
+      "studio_wYlMcDBydHxs_ref1.jpg",
+      "studio_wnoZRrTsxKRB_start.png",
+      "studio_x3yDpjG3Rx0u_start.png",
+      "studio_xICw2I4O4zXO_location.jpg",
+      "studio_xICw2I4O4zXO_ref1.jpg",
+      "studio_xICw2I4O4zXO_ref2.jpg",
+      "studio_xICw2I4O4zXO_ref3.jpg",
+      "studio_xIYEjTcydkEV_start.png",
+      "studio_xqC2ZqvFBKl0_location.jpg",
+      "studio_xqC2ZqvFBKl0_ref1.jpg",
+      "studio_y-WjQK0yDumN_start.jpg",
+      "studio_yB6-qSIxNxH__mid1.jpg",
+      "studio_yB6-qSIxNxH__ref1.jpg",
+      "studio_yhKMjEVFUSz7_start.png",
+      "studio_ykh7p9oGfSxP_start.png",
+      "studio_zM8Tu27su1DC_start.png",
+      "studio_zVM4OcH28Z30.png",
+      "studio_zuPZLZty751j_location.png",
+      "studio_zuPZLZty751j_ref1.png",
+      "studio_zuPZLZty751j_ref2.png"
+     ],
+     {
+      "image_upload": true
+     }
+    ]
+   }
+  },
+  "output": [
+   "IMAGE",
+   "MASK"
+  ],
+  "output_name": [
+   "IMAGE",
+   "MASK"
+  ]
+ },
+ "LoadVideo": {
+  "category": "video",
+  "input": {
+   "required": {
+    "file": [
+     "COMBO",
+     {
+      "multiselect": false,
+      "options": [
+       "studio_HQ5LFZEIqxj__guide.mp4",
+       "studio_b9W8APkri5SM_guide.mp4",
+       "studio_i45jdmhhTv1x_guide.mp4"
+      ],
+      "video_upload": true
+     }
+    ]
+   }
+  },
+  "output": [
+   "VIDEO"
+  ],
+  "output_name": [
+   "VIDEO"
+  ]
+ },
+ "ManualSigmas": {
+  "category": "model/sampling/sigmas",
+  "input": {
+   "required": {
+    "sigmas": [
+     "STRING",
+     {
+      "default": "1, 0.5",
+      "multiline": false
+     }
+    ]
+   }
+  },
+  "output": [
+   "SIGMAS"
+  ],
+  "output_name": [
+   "SIGMAS"
+  ]
+ },
+ "PrimitiveBoolean": {
+  "category": "utilities/primitive",
+  "input": {
+   "required": {
+    "value": [
+     "BOOLEAN",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "BOOLEAN"
+  ],
+  "output_name": [
+   "BOOLEAN"
+  ]
+ },
+ "PrimitiveFloat": {
+  "category": "utilities/primitive",
+  "input": {
+   "required": {
+    "value": [
+     "FLOAT",
+     {
+      "max": 9223372036854775807,
+      "min": -9223372036854775807,
+      "step": 0.1
+     }
+    ]
+   }
+  },
+  "output": [
+   "FLOAT"
+  ],
+  "output_name": [
+   "FLOAT"
+  ]
+ },
+ "PrimitiveInt": {
+  "category": "utilities/primitive",
+  "input": {
+   "required": {
+    "value": [
+     "INT",
+     {
+      "control_after_generate": "fixed",
+      "max": 9223372036854775807,
+      "min": -9223372036854775807
+     }
+    ]
+   }
+  },
+  "output": [
+   "INT"
+  ],
+  "output_name": [
+   "INT"
+  ]
+ },
+ "PrimitiveStringMultiline": {
+  "category": "utilities/primitive",
+  "input": {
+   "required": {
+    "value": [
+     "STRING",
+     {
+      "multiline": true
+     }
+    ]
+   }
+  },
+  "output": [
+   "STRING"
+  ],
+  "output_name": [
+   "STRING"
+  ]
+ },
+ "RandomNoise": {
+  "category": "model/sampling/noise",
+  "input": {
+   "required": {
+    "noise_seed": [
+     "INT",
+     {
+      "control_after_generate": true,
+      "default": 0,
+      "max": 18446744073709551615,
+      "min": 0
+     }
+    ]
+   }
+  },
+  "output": [
+   "NOISE"
+  ],
+  "output_name": [
+   "NOISE"
+  ]
+ },
+ "ResizeImageMaskNode": {
+  "category": "image/transform",
+  "input": {
+   "required": {
+    "input": [
+     "COMFY_MATCHTYPE_V3",
+     {
+      "template": {
+       "allowed_types": "IMAGE,MASK",
+       "template_id": "input_type"
+      }
+     }
+    ],
+    "resize_type": [
+     "COMFY_DYNAMICCOMBO_V3",
+     {
+      "options": [
+       {
+        "inputs": {
+         "required": {
+          "crop": [
+           "COMBO",
+           {
+            "default": "center",
+            "multiselect": false,
+            "options": [
+             "disabled",
+             "center"
+            ],
+            "tooltip": "How to handle aspect ratio mismatch: 'disabled' stretches to fit, 'center' crops to maintain aspect ratio."
+           }
+          ],
+          "height": [
+           "INT",
+           {
+            "default": 512,
+            "max": 16384,
+            "min": 0,
+            "step": 1,
+            "tooltip": "Target height in pixels. Set to 0 to auto-calculate from width while preserving aspect ratio."
+           }
+          ],
+          "width": [
+           "INT",
+           {
+            "default": 512,
+            "max": 16384,
+            "min": 0,
+            "step": 1,
+            "tooltip": "Target width in pixels. Set to 0 to auto-calculate from height while preserving aspect ratio."
+           }
+          ]
+         }
+        },
+        "key": "scale dimensions"
+       },
+       {
+        "inputs": {
+         "required": {
+          "multiplier": [
+           "FLOAT",
+           {
+            "default": 1.0,
+            "max": 8.0,
+            "min": 0.01,
+            "step": 0.01,
+            "tooltip": "Scale factor (e.g., 2.0 doubles size, 0.5 halves size)."
+           }
+          ]
+         }
+        },
+        "key": "scale by multiplier"
+       },
+       {
+        "inputs": {
+         "required": {
+          "longer_size": [
+           "INT",
+           {
+            "default": 512,
+            "max": 16384,
+            "min": 0,
+            "step": 1,
+            "tooltip": "The longer edge will be resized to this value. Aspect ratio is preserved."
+           }
+          ]
+         }
+        },
+        "key": "scale longer dimension"
+       },
+       {
+        "inputs": {
+         "required": {
+          "shorter_size": [
+           "INT",
+           {
+            "default": 512,
+            "max": 16384,
+            "min": 0,
+            "step": 1,
+            "tooltip": "The shorter edge will be resized to this value. Aspect ratio is preserved."
+           }
+          ]
+         }
+        },
+        "key": "scale shorter dimension"
+       },
+       {
+        "inputs": {
+         "required": {
+          "width": [
+           "INT",
+           {
+            "default": 512,
+            "max": 16384,
+            "min": 0,
+            "step": 1,
+            "tooltip": "Target width in pixels. Height auto-adjusts to preserve aspect ratio."
+           }
+          ]
+         }
+        },
+        "key": "scale width"
+       },
+       {
+        "inputs": {
+         "required": {
+          "height": [
+           "INT",
+           {
+            "default": 512,
+            "max": 16384,
+            "min": 0,
+            "step": 1,
+            "tooltip": "Target height in pixels. Width auto-adjusts to preserve aspect ratio."
+           }
+          ]
+         }
+        },
+        "key": "scale height"
+       },
+       {
+        "inputs": {
+         "required": {
+          "megapixels": [
+           "FLOAT",
+           {
+            "default": 1.0,
+            "max": 16.0,
+            "min": 0.01,
+            "step": 0.01,
+            "tooltip": "Target total megapixels (e.g., 1.0 \u2248 1024\u00d71024). Aspect ratio is preserved."
+           }
+          ]
+         }
+        },
+        "key": "scale total pixels"
+       },
+       {
+        "inputs": {
+         "required": {
+          "crop": [
+           "COMBO",
+           {
+            "default": "center",
+            "multiselect": false,
+            "options": [
+             "disabled",
+             "center"
+            ],
+            "tooltip": "How to handle aspect ratio mismatch: 'disabled' stretches to fit, 'center' crops to maintain aspect ratio."
+           }
+          ],
+          "match": [
+           "IMAGE,MASK",
+           {
+            "tooltip": "Resize input to match the dimensions of this reference image or mask."
+           }
+          ]
+         }
+        },
+        "key": "match size"
+       },
+       {
+        "inputs": {
+         "required": {
+          "multiple": [
+           "INT",
+           {
+            "default": 8,
+            "max": 16384,
+            "min": 1,
+            "step": 1,
+            "tooltip": "Resize so width and height are divisible by this number. Useful for latent alignment (e.g., 8 or 64)."
+           }
+          ]
+         }
+        },
+        "key": "scale to multiple"
+       }
+      ],
+      "tooltip": "Select how to resize: by exact dimensions, scale factor, matching another image, etc."
+     }
+    ],
+    "scale_method": [
+     "COMBO",
+     {
+      "default": "area",
+      "multiselect": false,
+      "options": [
+       "nearest-exact",
+       "bilinear",
+       "area",
+       "bicubic",
+       "lanczos"
+      ],
+      "tooltip": "Interpolation algorithm. 'area' is best for downscaling, 'lanczos' for upscaling, 'nearest-exact' for pixel art."
+     }
+    ]
+   }
+  },
+  "output": [
+   "COMFY_MATCHTYPE_V3"
+  ],
+  "output_name": [
+   "resized"
+  ]
+ },
+ "SamplerCustomAdvanced": {
+  "category": "model/sampling/custom",
+  "input": {
+   "required": {
+    "guider": [
+     "GUIDER",
+     {}
+    ],
+    "latent_image": [
+     "LATENT",
+     {}
+    ],
+    "noise": [
+     "NOISE",
+     {}
+    ],
+    "sampler": [
+     "SAMPLER",
+     {}
+    ],
+    "sigmas": [
+     "SIGMAS",
+     {}
+    ]
+   }
+  },
+  "output": [
+   "LATENT",
+   "LATENT"
+  ],
+  "output_name": [
+   "output",
+   "denoised_output"
+  ]
+ },
+ "SaveVideo": {
+  "category": "video",
+  "input": {
+   "hidden": {
+    "extra_pnginfo": [
+     "EXTRA_PNGINFO"
+    ],
+    "prompt": [
+     "PROMPT"
+    ]
+   },
+   "optional": {
+    "codec": [
+     "COMFY_DYNAMICCOMBO_V3",
+     {
+      "hidden": true,
+      "options": [
+       {
+        "inputs": {
+         "required": {}
+        },
+        "key": "auto"
+       },
+       {
+        "inputs": {
+         "optional": {
+          "encoding": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "display_name": "encoding mode",
+            "options": [
+             {
+              "inputs": {
+               "required": {}
+              },
+              "key": "auto"
+             },
+             {
+              "inputs": {
+               "required": {
+                "crf": [
+                 "FLOAT",
+                 {
+                  "default": 23.0,
+                  "max": 51.0,
+                  "min": 0.0,
+                  "step": 1.0,
+                  "tooltip": "Lower values produce higher quality and larger files."
+                 }
+                ]
+               }
+              },
+              "key": "re-encode"
+             }
+            ],
+            "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options."
+           }
+          ]
+         },
+         "required": {}
+        },
+        "key": "h264"
+       },
+       {
+        "inputs": {
+         "optional": {
+          "encoding": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "display_name": "encoding mode",
+            "options": [
+             {
+              "inputs": {
+               "required": {}
+              },
+              "key": "auto"
+             },
+             {
+              "inputs": {
+               "required": {
+                "crf": [
+                 "FLOAT",
+                 {
+                  "default": 30.0,
+                  "max": 63.0,
+                  "min": 0.0,
+                  "step": 1.0,
+                  "tooltip": "Lower values produce higher quality and larger files."
+                 }
+                ]
+               }
+              },
+              "key": "re-encode"
+             }
+            ],
+            "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options."
+           }
+          ]
+         },
+         "required": {}
+        },
+        "key": "av1"
+       }
+      ],
+      "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ."
+     }
+    ]
+   },
+   "required": {
+    "filename_prefix": [
+     "STRING",
+     {
+      "default": "video/ComfyUI",
+      "multiline": false,
+      "tooltip": "The prefix for the file to save. This may include formatting information such as %date:yyyy-MM-dd% or %Empty Latent Image.width% to include values from nodes."
+     }
+    ],
+    "format": [
+     "COMFY_DYNAMICCOMBO_V3",
+     {
+      "options": [
+       {
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "options": [
+             {
+              "inputs": {
+               "required": {}
+              },
+              "key": "auto"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 23.0,
+                        "max": 51.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "h264"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 30.0,
+                        "max": 63.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "av1"
+             }
+            ],
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ."
+           }
+          ]
+         }
+        },
+        "key": "auto"
+       },
+       {
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "options": [
+             {
+              "inputs": {
+               "required": {}
+              },
+              "key": "auto"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 23.0,
+                        "max": 51.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "h264"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 30.0,
+                        "max": 63.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "av1"
+             }
+            ],
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ."
+           }
+          ]
+         }
+        },
+        "key": "mp4"
+       },
+       {
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "options": [
+             {
+              "inputs": {
+               "required": {}
+              },
+              "key": "auto"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 23.0,
+                        "max": 51.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible H.264 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "h264"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 30.0,
+                        "max": 63.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "av1"
+             }
+            ],
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ."
+           }
+          ]
+         }
+        },
+        "key": "mkv"
+       },
+       {
+        "inputs": {
+         "required": {
+          "codec": [
+           "COMFY_DYNAMICCOMBO_V3",
+           {
+            "options": [
+             {
+              "inputs": {
+               "required": {}
+              },
+              "key": "auto"
+             },
+             {
+              "inputs": {
+               "optional": {
+                "encoding": [
+                 "COMFY_DYNAMICCOMBO_V3",
+                 {
+                  "display_name": "encoding mode",
+                  "options": [
+                   {
+                    "inputs": {
+                     "required": {}
+                    },
+                    "key": "auto"
+                   },
+                   {
+                    "inputs": {
+                     "required": {
+                      "crf": [
+                       "FLOAT",
+                       {
+                        "default": 30.0,
+                        "max": 63.0,
+                        "min": 0.0,
+                        "step": 1.0,
+                        "tooltip": "Lower values produce higher quality and larger files."
+                       }
+                      ]
+                     }
+                    },
+                    "key": "re-encode"
+                   }
+                  ],
+                  "tooltip": "Automatic preserves compatible AV1 streams. Re-encode applies custom encoding options."
+                 }
+                ]
+               },
+               "required": {}
+              },
+              "key": "av1"
+             }
+            ],
+            "tooltip": "The output video codec. Auto preserves a compatible source stream. H.264 and AV1 re-encoding support SDR, HDR (HLG), and HDR PQ."
+           }
+          ]
+         }
+        },
+        "key": "webm"
+       }
+      ],
+      "tooltip": "The output container. Auto uses MP4 for Auto/H.264 and WebM for AV1. MP4, MKV, and WebM select a specific container."
+     }
+    ],
+    "video": [
+     "VIDEO",
+     {
+      "tooltip": "The video to save."
+     }
+    ]
+   }
+  },
+  "output": [
+   "VIDEO"
+  ],
+  "output_name": [
+   "video"
+  ]
+ },
+ "SetLatentNoiseMask": {
+  "category": "model/latent",
+  "input": {
+   "required": {
+    "mask": [
+     "MASK"
+    ],
+    "samples": [
+     "LATENT"
+    ]
+   }
+  },
+  "output": [
+   "LATENT"
+  ],
+  "output_name": [
+   "LATENT"
+  ]
+ },
+ "SolidMask": {
+  "category": "image/mask",
+  "input": {
+   "required": {
+    "height": [
+     "INT",
+     {
+      "default": 512,
+      "max": 16384,
+      "min": 1,
+      "step": 1
+     }
+    ],
+    "value": [
+     "FLOAT",
+     {
+      "default": 1.0,
+      "max": 1.0,
+      "min": 0.0,
+      "step": 0.01
+     }
+    ],
+    "width": [
+     "INT",
+     {
+      "default": 512,
+      "max": 16384,
+      "min": 1,
+      "step": 1
+     }
+    ]
+   }
+  },
+  "output": [
+   "MASK"
+  ],
+  "output_name": [
+   "MASK"
+  ]
+ },
+ "TrimAudioDuration": {
+  "category": "audio",
+  "input": {
+   "required": {
+    "audio": [
+     "AUDIO",
+     {}
+    ],
+    "duration": [
+     "FLOAT",
+     {
+      "default": 60.0,
+      "min": 0.0,
+      "step": 0.01,
+      "tooltip": "Duration in seconds"
+     }
+    ],
+    "start_index": [
+     "FLOAT",
+     {
+      "default": 0.0,
+      "max": 18446744073709551615,
+      "min": -18446744073709551615,
+      "step": 0.01,
+      "tooltip": "Start time in seconds, can be negative to count from the end (supports sub-seconds)."
+     }
+    ]
+   }
+  },
+  "output": [
+   "AUDIO"
+  ],
+  "output_name": [
+   "AUDIO"
+  ]
+ },
+ "UNETLoader": {
+  "category": "model/loaders",
+  "input": {
+   "required": {
+    "unet_name": [
+     [
+      "ltx-2.5-22b-distilled-transformer-bf16.safetensors",
+      "ltx-2.5-22b-distilled-transformer-comfy-int8-convrot.safetensors"
+     ]
+    ],
+    "weight_dtype": [
+     [
+      "default",
+      "fp8_e4m3fn",
+      "fp8_e4m3fn_fast",
+      "fp8_e5m2"
+     ],
+     {
+      "advanced": true
+     }
+    ]
+   }
+  },
+  "output": [
+   "MODEL"
+  ],
+  "output_name": [
+   "MODEL"
+  ]
+ },
+ "VAEDecodeTiled": {
+  "category": "model/latent",
+  "input": {
+   "required": {
+    "overlap": [
+     "INT",
+     {
+      "advanced": true,
+      "default": 64,
+      "max": 4096,
+      "min": 0,
+      "step": 32
+     }
+    ],
+    "samples": [
+     "LATENT"
+    ],
+    "temporal_overlap": [
+     "INT",
+     {
+      "advanced": true,
+      "default": 8,
+      "max": 4096,
+      "min": 4,
+      "step": 4,
+      "tooltip": "Only used for video VAEs: Amount of frames to overlap."
+     }
+    ],
+    "temporal_size": [
+     "INT",
+     {
+      "advanced": true,
+      "default": 64,
+      "max": 4096,
+      "min": 8,
+      "step": 4,
+      "tooltip": "Only used for video VAEs: Amount of frames to decode at a time."
+     }
+    ],
+    "tile_size": [
+     "INT",
+     {
+      "advanced": true,
+      "default": 512,
+      "max": 4096,
+      "min": 64,
+      "step": 32
+     }
+    ],
+    "vae": [
+     "VAE"
+    ]
+   }
+  },
+  "output": [
+   "IMAGE"
+  ],
+  "output_name": [
+   "IMAGE"
+  ]
+ },
+ "VAEEncode": {
+  "category": "latent",
+  "description": "",
+  "display_name": "VAE Encode",
+  "input": {
+   "required": {
+    "pixels": [
+     "IMAGE"
+    ],
+    "vae": [
+     "VAE"
+    ]
+   }
+  },
+  "input_order": {
+   "required": [
+    "pixels",
+    "vae"
+   ]
+  },
+  "name": "VAEEncode",
+  "output": [
+   "LATENT"
+  ],
+  "output_is_list": [
+   false
+  ],
+  "output_name": [
+   "LATENT"
+  ],
+  "output_node": false,
+  "python_module": "nodes"
+ },
+ "VAELoader": {
+  "category": "model/loaders",
+  "input": {
+   "required": {
+    "vae_name": [
+     [
+      "ltx-2.5-audio-vae-bf16.safetensors",
+      "ltx-2.5-video-vae-bf16.safetensors",
+      "pixel_space"
+     ]
+    ]
+   }
+  },
+  "output": [
+   "VAE"
+  ],
+  "output_name": [
+   "VAE"
+  ]
+ }
+}

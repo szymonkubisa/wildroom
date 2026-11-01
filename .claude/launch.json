@@ -1,0 +1,28 @@
+{
+  "version": "0.0.1",
+  "configurations": [
+    {
+      "name": "studio",
+      "runtimeExecutable": "pnpm",
+      "runtimeArgs": [
+        "dev"
+      ],
+      "port": 5180,
+      "url": "http://127.0.0.1:5180"
+    },
+    {
+      "name": "studio-sandbox",
+      "runtimeExecutable": "env",
+      "runtimeArgs": [
+        "STUDIO_HOME=/tmp/wildroom-sandbox",
+        "STUDIO_PORT=7791",
+        "STUDIO_SERVER=http://127.0.0.1:7791",
+        "STUDIO_WEB_PORT=5191",
+        "pnpm",
+        "dev"
+      ],
+      "port": 5191,
+      "url": "http://127.0.0.1:5191"
+    }
+  ]
+}

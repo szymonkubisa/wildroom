@@ -1,0 +1,871 @@
+<!doctype html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Wildroom Studio</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<meta name="description" content="Wildroom Studio: write a script, design the cast and places, let the AI Director plan every shot, render it and cut the film on a magnetic timeline. An AI film studio for the Mac.">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wdth,wght@62..125,500..900&family=Geist:wght@400;500;600&family=Geist+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: a wide screening room in the app's own black. One real project, Impossible Worlds, is followed from script to
+   final cut: the film opens the page, then Story mode runs as four wide panels that mirror the app, then the generation itself. */
+:root {
+  color-scheme: dark;
+  --bg: #09090a;
+  --panel: #131315;
+  --card: #1b1b1e;
+  --raised: #232327;
+  --line: rgb(255 255 255 / 7%);
+  --line-2: rgb(255 255 255 / 12%);
+  --fg: #f2f2f3;
+  --muted: #a3a3aa;
+  --faint: #6c6c74;
+  --field: rgb(255 255 255 / 6.5%);
+  --white: #f5f5f6;
+  --ink: #111113;
+  /* Impossible Worlds' palette: salt, ochre, violet sky */
+  --salt: #efe6dc;
+  --ochre: #d98a4e;
+  --violet: #a99bd6;
+  /* Timeline roles, from the app */
+  --video: #5b7cf0;
+  --titles: #8d63e6;
+  --dialogue: #3fa4d4;
+  --music: #3fbf7f;
+  --effects: #e59a3c;
+  --skimmer: #f0559b;
+  --selection: #f2c94c;
+
+  --display: "Archivo", "Helvetica Neue", Arial, sans-serif;
+  --body: "Geist", ui-sans-serif, system-ui, -apple-system, sans-serif;
+  --mono: "Geist Mono", ui-monospace, "SF Mono", Menlo, monospace;
+  --maxw: 1480px;
+}
+
+* { box-sizing: border-box; }
+html { scroll-behavior: smooth; }
+body { background: var(--bg); color: var(--fg); font: 400 16px/1.6 var(--body); -webkit-font-smoothing: antialiased; overflow-x: hidden; }
+a { color: inherit; }
+img, video { display: block; max-width: 100%; }
+h1, h2, h3, h4 { margin: 0; text-wrap: balance; }
+p { margin: 0; }
+.wrap { max-width: var(--maxw); margin: 0 auto; padding-left: max(24px, env(safe-area-inset-left, 0px)); padding-right: max(24px, env(safe-area-inset-right, 0px)); }
+.mono { font-family: var(--mono); font-variant-numeric: tabular-nums; }
+.eyebrow { font: 500 12px/1 var(--mono); letter-spacing: .08em; text-transform: uppercase; color: var(--muted); display: inline-flex; align-items: center; gap: 8px; }
+.eyebrow i { width: 8px; height: 8px; border-radius: 2px; }
+.btn { display: inline-flex; align-items: center; justify-content: center; gap: 9px; height: 44px; padding: 0 20px; border-radius: 999px; font: 600 15px/1 var(--body); text-decoration: none; border: 0; cursor: pointer; white-space: nowrap; transition: transform .15s, background .15s; }
+.btn:hover { transform: translateY(-1px); }
+.btn-primary { background: var(--white); color: var(--ink); }
+.btn-ghost { background: rgb(255 255 255 / 9%); color: var(--fg); box-shadow: inset 0 0 0 1px var(--line-2); backdrop-filter: blur(10px); }
+.btn svg { width: 16px; height: 16px; }
+:focus-visible { outline: 2px solid var(--skimmer); outline-offset: 3px; }
+.chip { display: inline-flex; align-items: center; gap: 6px; height: 26px; padding: 0 9px; border-radius: 7px; background: var(--field); color: var(--muted); font: 500 11.5px/1 var(--body); white-space: nowrap; }
+.chip.w { background: var(--white); color: var(--ink); font-weight: 600; }
+.chip.o { background: transparent; box-shadow: inset 0 0 0 1px var(--line-2); }
+.chip svg { width: 12px; height: 12px; }
+.disp { font-family: var(--display); font-weight: 830; font-stretch: 76%; letter-spacing: -.04em; text-transform: uppercase; line-height: .9; }
+
+/* ---------- Nav ---------- */
+.nav { position: sticky; top: env(safe-area-inset-top, 0px); z-index: 40; background: rgb(9 9 10 / 70%); backdrop-filter: blur(16px) saturate(140%); border-bottom: 1px solid var(--line); }
+.nav .wrap { display: flex; align-items: center; gap: 28px; height: 60px; }
+.logo { display: flex; align-items: center; gap: 9px; text-decoration: none; }
+.logo .mark { width: 28px; height: 28px; border-radius: 7px; background: #000; display: grid; place-items: center; box-shadow: 0 0 0 1px rgb(255 255 255 / 16%); }
+.logo .mark svg { width: 18px; height: 18px; color: #fff; transform: translateY(-1px); }
+.logo b { font: 800 15px/1 var(--display); letter-spacing: -.06em; }
+.nav ul { display: flex; gap: 26px; list-style: none; margin: 0 0 0 auto; padding: 0; font-size: 14px; color: var(--muted); }
+.nav ul a { text-decoration: none; transition: color .15s; }
+.nav ul a:hover { color: var(--fg); }
+.nav .btn { height: 34px; font-size: 13.5px; padding: 0 14px; }
+@media (max-width: 900px) { .nav ul { display: none; } .nav .btn { margin-left: auto; } }
+
+/* ---------- Hero: the finished film ---------- */
+.hero { position: relative; }
+.hero-stage { position: relative; width: 100%; aspect-ratio: 2.1 / 1; min-height: 560px; max-height: 860px; overflow: hidden; background: #000 url(media/poster.jpg) center/cover; }
+.hero-stage video { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; }
+.hero-stage::after { content: ""; position: absolute; inset: 0; background: linear-gradient(180deg, rgb(9 9 10 / 55%) 0%, transparent 22%, transparent 45%, rgb(9 9 10 / 75%) 78%, var(--bg) 100%), linear-gradient(90deg, rgb(9 9 10 / 55%), transparent 55%); pointer-events: none; }
+.hero-copy { position: absolute; inset: auto 0 0 0; z-index: 2; padding-block: 0 48px; }
+.hero-copy .wrap { display: grid; grid-template-columns: minmax(0, 1.3fr) minmax(0, .7fr); gap: 48px; align-items: end; }
+.hero h1 { font-size: clamp(54px, 8.6vw, 148px); line-height: .84; font-weight: 900; font-stretch: 80%; -webkit-text-stroke: .012em currentColor; paint-order: stroke fill; letter-spacing: -.045em; text-transform: uppercase; text-shadow: 0 2px 40px rgb(0 0 0 / 35%); }
+.hero-side { display: grid; gap: 20px; max-width: 420px; }
+.hero-side p { color: rgb(242 242 243 / 82%); font-size: 18px; }
+.hero-side p b { color: var(--fg); font-weight: 500; }
+.ctas { display: flex; flex-wrap: wrap; gap: 10px; }
+.credit { position: absolute; z-index: 3; top: 18px; right: max(24px, env(safe-area-inset-right, 0px)); display: flex; gap: 8px; align-items: center; }
+.credit .chip { background: rgb(0 0 0 / 45%); color: #fff; backdrop-filter: blur(8px); }
+.sound { cursor: pointer; border: 0; }
+.fine { font: 400 12px/1.5 var(--mono); color: var(--faint); }
+.facts { border-bottom: 1px solid var(--line); }
+.facts .wrap { display: grid; grid-template-columns: repeat(6, minmax(0, 1fr)); }
+.fact { padding-block: 26px; padding-right: 16px; border-left: 1px solid var(--line); padding-left: 20px; }
+.fact:first-child { border-left: 0; padding-left: 0; }
+.fact b { display: block; font: 800 34px/1 var(--display); font-stretch: 80%; letter-spacing: -.02em; font-variant-numeric: tabular-nums; }
+.fact span { font: 500 12px/1.4 var(--mono); color: var(--muted); }
+@media (max-width: 1000px) { .hero-copy .wrap { grid-template-columns: 1fr; gap: 22px; } .hero-stage { min-height: 640px; } .facts .wrap { grid-template-columns: repeat(3, minmax(0, 1fr)); } .fact:nth-child(4) { border-left: 0; padding-left: 0; } .fact:nth-child(n+4) { border-top: 1px solid var(--line); } }
+@media (max-width: 560px) { .hero-stage { min-height: 600px; } .hero-side p { font-size: 16px; } .facts .wrap { grid-template-columns: repeat(2, minmax(0, 1fr)); } .fact { border-left: 0 !important; padding-left: 0 !important; border-top: 1px solid var(--line); } .fact:nth-child(-n+2) { border-top: 0; } .fact b { font-size: 28px; } }
+
+/* ---------- Section heads ---------- */
+section.block { padding-block: 140px 0; }
+.sh { display: grid; grid-template-columns: minmax(0, 1.15fr) minmax(0, .85fr); gap: 56px; align-items: end; margin-bottom: 56px; }
+.sh h2 { font-size: clamp(42px, 5.8vw, 92px); margin-top: 18px; }
+.sh p { color: var(--muted); font-size: 18px; max-width: 52ch; }
+.sh p b { color: var(--fg); font-weight: 500; }
+@media (max-width: 900px) { .sh { grid-template-columns: 1fr; gap: 18px; margin-bottom: 40px; } section.block { padding-block: 100px 0; } }
+
+/* ---------- Story mode: stepper ---------- */
+.stepper { position: sticky; top: calc(60px + env(safe-area-inset-top, 0px)); z-index: 30; background: rgb(9 9 10 / 82%); backdrop-filter: blur(14px); border-block: 1px solid var(--line); margin-bottom: 28px; }
+.stepper .wrap { display: flex; align-items: center; gap: 6px; height: 64px; overflow-x: auto; scrollbar-width: none; }
+.stepper .ttl { display: grid; line-height: 1.2; margin-right: 14px; min-width: 0; flex: none; }
+.stepper .ttl b { font-size: 13.5px; font-weight: 600; }
+.stepper .ttl span { font-size: 11px; color: var(--muted); max-width: 30ch; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.step-btn { display: flex; align-items: center; gap: 10px; padding: 7px 12px 7px 8px; border-radius: 10px; text-decoration: none; color: var(--muted); flex: none; transition: background .2s, color .2s; }
+.step-btn .ck { width: 22px; height: 22px; border-radius: 50%; display: grid; place-items: center; background: var(--field); font: 600 11px/1 var(--body); }
+.step-btn .ck svg { width: 12px; height: 12px; }
+.step-btn.done .ck { background: var(--white); color: var(--ink); }
+.step-btn span.l { display: grid; line-height: 1.2; }
+.step-btn span.l b { font-size: 13px; font-weight: 500; color: inherit; }
+.step-btn span.l small { font: 400 11px/1.3 var(--mono); color: var(--faint); }
+.step-btn.on { background: var(--field); color: var(--fg); }
+.stepper .sp { flex: 1; }
+.stepper .chip { flex: none; }
+@media (max-width: 760px) { .stepper .ttl, .stepper .sp, .stepper .chip { display: none; } }
+
+.stage { display: grid; grid-template-columns: 340px minmax(0, 1fr); gap: 40px; align-items: start; padding-block: 56px; border-top: 1px solid var(--line); scroll-margin-top: 140px; }
+.stage:first-of-type { border-top: 0; }
+.stage-copy { position: sticky; top: 160px; display: grid; gap: 16px; }
+.stage-copy .num { font: 500 12px/1 var(--mono); color: var(--faint); letter-spacing: .06em; }
+.stage-copy h3 { font: 830 44px/.92 var(--display); font-stretch: 76%; letter-spacing: -.035em; text-transform: uppercase; }
+.stage-copy p { color: var(--muted); font-size: 16px; }
+.stage-copy ul { list-style: none; margin: 4px 0 0; padding: 0; display: grid; gap: 8px; }
+.stage-copy li { display: grid; grid-template-columns: 18px minmax(0, 1fr); gap: 8px; color: var(--muted); font-size: 14.5px; line-height: 1.45; }
+.stage-copy li::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: var(--ochre); margin: 7px 0 0 4px; }
+.stage-copy li b { color: var(--fg); font-weight: 500; }
+@media (max-width: 1100px) { .stage { grid-template-columns: 1fr; gap: 28px; } .stage-copy { position: static; } }
+
+/* App panels */
+.app { background: #0d0d0f; border-radius: 16px; box-shadow: 0 0 0 1px var(--line-2), 0 40px 100px -40px #000; overflow: hidden; min-width: 0; font-size: 13px; }
+.app-bar { display: flex; align-items: center; gap: 10px; padding: 12px 16px; border-bottom: 1px solid var(--line); flex-wrap: wrap; }
+.app-bar b { font-size: 14px; font-weight: 600; }
+.app-bar .sp { flex: 1; }
+.lbl { font: 500 11px/1 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
+.pane { background: var(--panel); border-radius: 12px; padding: 16px; min-width: 0; }
+
+/* Step 1 */
+.s1 { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(0, .9fr); gap: 12px; padding: 12px; }
+.script { font: 400 13px/1.7 var(--mono); color: var(--muted); max-height: 430px; overflow: hidden; mask: linear-gradient(#000 80%, transparent); white-space: pre-wrap; }
+.script .h { color: var(--fg); font-weight: 500; }
+.script .c { color: var(--salt); font-weight: 500; }
+.script .t { color: var(--ochre); }
+.style-f { margin-top: 12px; background: var(--field); border-radius: 10px; padding: 10px 12px; font-size: 13px; color: var(--muted); line-height: 1.5; }
+.style-f .lbl { display: block; margin-bottom: 6px; }
+.btnrow { display: flex; gap: 8px; flex-wrap: wrap; margin-top: 12px; }
+.outline { display: grid; gap: 12px; align-content: start; }
+.outline h4 { font: 800 30px/1 var(--display); font-stretch: 80%; letter-spacing: -.02em; text-transform: uppercase; }
+.outline .log { color: var(--muted); font-size: 14px; }
+.chapter { border-top: 1px solid var(--line); padding-top: 12px; display: grid; gap: 10px; }
+.chapter .ch { font: 600 12px/1 var(--body); letter-spacing: .06em; text-transform: uppercase; }
+.scene-card { background: var(--card); border-radius: 10px; padding: 12px; display: grid; gap: 6px; }
+.scene-card .row { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.tag { font: 600 11px/1 var(--body); padding: 4px 7px; border-radius: 99px; background: var(--white); color: var(--ink); }
+.scene-card b { font-size: 14px; }
+.scene-card p { font-size: 13px; color: var(--muted); line-height: 1.5; }
+.mini-ids { display: flex; gap: 6px; flex-wrap: wrap; }
+.mini-ids span { font: 500 11px/1 var(--mono); color: var(--muted); padding: 5px 7px; border-radius: 6px; background: var(--field); }
+@media (max-width: 900px) { .s1 { grid-template-columns: 1fr; } }
+
+/* Step 2 */
+.s2 { display: grid; grid-template-columns: minmax(0, .95fr) minmax(0, 1.05fr); gap: 12px; padding: 12px; }
+.cast-top { display: grid; grid-template-columns: 150px minmax(0, 1fr); gap: 14px; }
+.face { position: relative; aspect-ratio: 3/4; border-radius: 10px; overflow: hidden; box-shadow: 0 0 0 2px var(--selection); }
+.face img { width: 100%; height: 100%; object-fit: cover; }
+.face span { position: absolute; left: 6px; bottom: 6px; font: 600 10px/1 var(--body); background: var(--selection); color: var(--ink); padding: 4px 6px; border-radius: 5px; }
+.who h4 { font: 800 28px/1 var(--display); font-stretch: 80%; text-transform: uppercase; letter-spacing: -.02em; }
+.who p { font-size: 13px; color: var(--muted); line-height: 1.5; margin-top: 8px; }
+.kv { display: grid; grid-template-columns: 70px minmax(0, 1fr); gap: 6px 10px; margin-top: 10px; font-size: 12.5px; }
+.kv dt { color: var(--faint); font: 500 11px/1.6 var(--mono); text-transform: uppercase; }
+.kv dd { margin: 0; color: var(--fg); }
+.takes6 { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 6px; margin-top: 14px; }
+.takes6 div { aspect-ratio: 3/4; border-radius: 7px; overflow: hidden; opacity: .62; transition: opacity .2s; }
+.takes6 div:hover { opacity: 1; }
+.takes6 img { width: 100%; height: 100%; object-fit: cover; object-position: top; }
+.views { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 6px; margin-top: 12px; }
+.view { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; }
+.view img { width: 100%; height: 100%; object-fit: cover; }
+.view span { position: absolute; left: 6px; top: 6px; font: 500 10px/1 var(--mono); color: #fff; background: rgb(0 0 0 / 55%); padding: 4px 6px; border-radius: 4px; }
+.view.main { grid-column: 1 / -1; aspect-ratio: 21/9; }
+.compass { position: absolute; right: 8px; top: 8px; width: 46px; height: 46px; border-radius: 50%; background: rgb(0 0 0 / 50%); display: grid; place-items: center; font: 600 9px/1 var(--mono); color: #fff; }
+.compass i { position: absolute; font-style: normal; }
+@media (max-width: 1000px) { .s2 { grid-template-columns: 1fr; } }
+@media (max-width: 520px) { .cast-top { grid-template-columns: 110px minmax(0, 1fr); } }
+
+/* Step 3 */
+.s3 { display: grid; grid-template-columns: minmax(0, 1fr) 300px; gap: 12px; padding: 12px; }
+.board { display: grid; gap: 8px; align-content: start; }
+.scene-h { display: grid; gap: 6px; padding: 4px 4px 10px; }
+.scene-h .row { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; }
+.scene-h h4 { font-size: 18px; font-weight: 600; letter-spacing: -.01em; }
+.scene-h p { color: var(--muted); font-size: 13.5px; line-height: 1.5; max-width: 90ch; }
+.scene-h .meta { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.scene-h .meta .mono { font-size: 12px; color: var(--muted); }
+.multi { border-radius: 12px; box-shadow: inset 0 0 0 1.5px rgb(255 255 255 / 35%); padding: 8px; display: grid; gap: 8px; background: rgb(255 255 255 / 3%); }
+.multi-h { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; padding: 4px 6px; font-size: 13px; }
+.multi-h b { font-weight: 600; }
+.multi-h small { color: var(--muted); font-size: 12px; }
+.multi-h .sp { flex: 1; }
+.multi-n { font-size: 12px; color: var(--muted); padding: 0 6px 4px; line-height: 1.5; }
+.shot { display: grid; grid-template-columns: 26px auto minmax(0, 1fr) auto; gap: 14px; align-items: center; background: var(--card); border-radius: 10px; padding: 9px 12px 9px 10px; cursor: pointer; transition: background .15s; }
+.shot:hover { background: var(--raised); }
+.shot .n { width: 24px; height: 24px; border-radius: 50%; background: var(--field); display: grid; place-items: center; font: 600 11px/1 var(--mono); color: var(--muted); }
+.shot .th { display: flex; gap: 4px; align-items: center; }
+.shot .th img { width: 108px; aspect-ratio: 16/9; object-fit: cover; border-radius: 6px; }
+.shot .th img.end { width: 54px; opacity: .9; }
+.shot .th .blank { width: 108px; aspect-ratio: 16/9; border-radius: 6px; background: var(--field); display: grid; place-items: center; font: 500 10px/1.2 var(--mono); color: var(--faint); text-align: center; }
+.shot .d { min-width: 0; }
+.shot .d small { display: block; font: 500 10.5px/1.3 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .03em; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.shot .d b { display: block; font-weight: 500; font-size: 14px; line-height: 1.35; margin-top: 3px; }
+.shot .d i { display: block; font-style: normal; font-size: 12px; color: var(--muted); margin-top: 2px; }
+.shot .r { display: flex; gap: 10px; align-items: center; font: 500 12px/1 var(--mono); color: var(--muted); }
+.shot .r .ok { width: 22px; height: 22px; border-radius: 6px; background: var(--field); display: grid; place-items: center; color: var(--fg); }
+.shot .r .ok svg { width: 12px; height: 12px; }
+.shot-x { display: none; grid-column: 1 / -1; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 10px; padding: 10px 0 4px 40px; font-size: 12.5px; color: var(--muted); line-height: 1.5; cursor: default; }
+.shot.open .shot-x { display: grid; }
+.shot-x div b { display: block; font: 500 10.5px/1.4 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; margin-bottom: 3px; }
+.insp { display: grid; gap: 12px; align-content: start; }
+.insp .f { display: grid; gap: 5px; }
+.insp .v { background: var(--field); border-radius: 8px; padding: 8px 10px; font-size: 12.5px; color: var(--fg); line-height: 1.45; }
+.insp .v.m { color: var(--muted); }
+.insp .who2 { display: flex; gap: 8px; align-items: center; }
+.insp .who2 img { width: 30px; height: 30px; border-radius: 50%; object-fit: cover; object-position: top; }
+.insp .place-th { position: relative; border-radius: 8px; overflow: hidden; aspect-ratio: 16/9; }
+.insp .place-th img { width: 100%; height: 100%; object-fit: cover; }
+.insp .place-th span { position: absolute; left: 6px; bottom: 6px; font: 600 11px/1 var(--body); color: #fff; text-shadow: 0 1px 4px #000; }
+@media (max-width: 1100px) { .s3 { grid-template-columns: 1fr; } .insp { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 680px) { .shot { grid-template-columns: 24px minmax(0, 1fr) auto; } .shot .th { grid-column: 2 / -1; order: 3; } .shot-x { grid-template-columns: 1fr; padding-left: 0; } .insp { grid-template-columns: 1fr; } }
+
+/* Step 4 */
+.s4 { padding: 12px; display: grid; gap: 12px; }
+.rtable { width: 100%; border-collapse: collapse; font-size: 13px; min-width: 560px; }
+.rtable th { text-align: left; font: 500 11px/1 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .05em; padding: 10px 12px; border-bottom: 1px solid var(--line); }
+.rtable td { padding: 12px; border-bottom: 1px solid var(--line); font-variant-numeric: tabular-nums; }
+.rtable td.ok { color: var(--music); }
+.tw { overflow-x: auto; background: var(--panel); border-radius: 12px; }
+.renders { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); gap: 10px; }
+.rclip { background: var(--panel); border-radius: 12px; overflow: hidden; }
+.rclip .v { position: relative; aspect-ratio: 16/9; background: #000; }
+.rclip video { width: 100%; height: 100%; object-fit: cover; }
+.rclip .v span { position: absolute; left: 8px; top: 8px; font: 500 10px/1 var(--body); color: #fff; background: rgb(0 0 0 / 55%); padding: 4px 6px; border-radius: 4px; }
+.rclip .v em { position: absolute; right: 8px; bottom: 8px; font: 500 10.5px/1 var(--mono); font-style: normal; color: #fff; background: rgb(0 0 0 / 55%); padding: 4px 6px; border-radius: 4px; }
+.rclip .m { padding: 10px 12px; display: flex; justify-content: space-between; gap: 10px; font-size: 12.5px; }
+.rclip .m b { font-weight: 500; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.rclip .m span { font: 500 11.5px/1.4 var(--mono); color: var(--muted); white-space: nowrap; }
+.assemble { display: flex; gap: 10px; align-items: center; flex-wrap: wrap; background: var(--panel); border-radius: 12px; padding: 14px 16px; }
+.assemble .sp { flex: 1; }
+.assemble p { font-size: 13.5px; color: var(--muted); }
+@media (max-width: 900px) { .renders { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .renders { grid-template-columns: 1fr; } }
+
+/* ---------- Generation: start, end, result ---------- */
+.gen-tabs { display: flex; gap: 6px; margin-bottom: 16px; flex-wrap: wrap; }
+.gen-tabs button { font: 500 13px/1 var(--body); color: var(--muted); background: var(--field); border: 0; padding: 10px 14px; border-radius: 99px; cursor: pointer; }
+.gen-tabs button.on { background: var(--white); color: var(--ink); }
+.triptych { display: grid; grid-template-columns: minmax(0, 1fr) 40px minmax(0, 1fr) 40px minmax(0, 1.25fr); align-items: center; gap: 8px; }
+.tp { display: grid; gap: 10px; min-width: 0; }
+.tp .pic { position: relative; aspect-ratio: 16/9; border-radius: 12px; overflow: hidden; background: #000; box-shadow: 0 0 0 1px var(--line-2); }
+.tp .pic img, .tp .pic video { width: 100%; height: 100%; object-fit: cover; }
+.tp .pic span { position: absolute; left: 10px; top: 10px; font: 500 11px/1 var(--body); color: #fff; background: rgb(0 0 0 / 55%); padding: 5px 7px; border-radius: 5px; }
+.tp .cap { font-size: 13px; color: var(--muted); line-height: 1.45; min-height: 3.6em; }
+.tp .cap b { color: var(--fg); font-weight: 500; }
+.arrow { display: grid; place-items: center; color: var(--faint); }
+.arrow svg { width: 22px; height: 22px; }
+.sent { margin-top: 28px; display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 12px; }
+.code { background: var(--panel); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); padding: 18px; font: 400 12.5px/1.7 var(--mono); color: var(--muted); overflow-x: auto; white-space: pre-wrap; word-break: break-word; }
+.code .k { color: var(--violet); }
+.code .s { color: var(--salt); }
+.code .n { color: var(--ochre); }
+.code .hd { color: var(--fg); display: block; margin-bottom: 8px; font-weight: 500; }
+.where { background: var(--panel); border-radius: 12px; box-shadow: inset 0 0 0 1px var(--line); padding: 18px; display: grid; gap: 14px; align-content: start; }
+.where h4 { font-size: 15px; font-weight: 600; }
+.where .grp { display: grid; gap: 6px; }
+.where .grp .lbl { margin-bottom: 2px; }
+.where .grp div { display: flex; flex-wrap: wrap; gap: 6px; }
+.where .grp span { font: 500 12.5px/1 var(--body); padding: 7px 9px; border-radius: 7px; background: var(--field); color: var(--fg); }
+.where .grp span.cur { box-shadow: inset 0 0 0 1.5px var(--selection); }
+@media (max-width: 1000px) { .triptych { grid-template-columns: 1fr; } .arrow { transform: rotate(90deg); height: 24px; } .sent { grid-template-columns: 1fr; } }
+
+/* ---------- Edit ---------- */
+.edit-wrap { display: grid; grid-template-columns: minmax(0, 1.25fr) minmax(0, .75fr); gap: 12px; }
+.tl { background: #0d0d0f; border-radius: 16px; box-shadow: 0 0 0 1px var(--line-2); padding: 14px; min-width: 0; display: grid; gap: 12px; }
+.tl-top { display: grid; grid-template-columns: minmax(0, .9fr) minmax(0, 1.1fr); gap: 12px; }
+.tl-view { position: relative; aspect-ratio: 16/9; border-radius: 8px; overflow: hidden; background: #000; }
+.tl-view video { width: 100%; height: 100%; object-fit: cover; }
+.tl-view .cap { position: absolute; left: 0; right: 0; top: 0; padding: 8px 10px; font-size: 11px; color: var(--muted); background: linear-gradient(rgb(0 0 0 / 70%), transparent); }
+.tl-ctl { display: flex; justify-content: space-between; font: 500 11px/1 var(--mono); color: var(--muted); padding-top: 8px; }
+.tl-ins { display: grid; gap: 8px; align-content: start; font-size: 12.5px; }
+.tl-ins .v { background: var(--field); border-radius: 8px; padding: 8px 10px; color: var(--muted); }
+.tl-ins .v b { color: var(--fg); font-weight: 500; }
+.lanes { position: relative; display: grid; gap: 4px; padding-top: 18px; }
+.ruler { position: absolute; left: 0; right: 0; top: 0; height: 14px; font: 500 9.5px/1 var(--mono); color: var(--faint); }
+.ruler span { position: absolute; top: 0; }
+.lane { position: relative; height: 20px; }
+.lane.v { height: 52px; }
+.clip { position: absolute; top: 0; bottom: 0; border-radius: 5px; overflow: hidden; font: 600 9.5px/1 var(--body); color: #fff; padding: 4px 6px; white-space: nowrap; text-overflow: ellipsis; }
+.clip.vid { padding: 0; background-color: var(--video); background-size: auto 100%; background-repeat: repeat-x; box-shadow: inset 0 0 0 1px rgb(0 0 0 / 40%); }
+.clip.vid::before { content: attr(data-l); position: absolute; left: 0; right: 0; top: 0; padding: 4px 6px; background: var(--video); overflow: hidden; text-overflow: ellipsis; }
+.c-t { background: var(--titles); } .c-m { background: var(--music); } .c-x { background: var(--effects); }
+.wave::after { content: ""; position: absolute; left: 0; right: 0; bottom: 3px; height: 8px; opacity: .5; background: repeating-linear-gradient(90deg, rgb(0 0 0 / 55%) 0 1px, transparent 1px 3px); }
+.playhead { position: absolute; top: 2px; bottom: 0; width: 1.5px; background: var(--white); z-index: 3; left: 0; }
+.playhead::before { content: ""; position: absolute; top: 0; left: -5px; width: 11.5px; height: 9px; background: var(--white); clip-path: polygon(0 0, 100% 0, 100% 50%, 50% 100%, 0 50%); }
+.ai-list { display: grid; gap: 1px; background: var(--line); border-radius: 16px; overflow: hidden; box-shadow: 0 0 0 1px var(--line); align-content: start; }
+.ai-list div { background: var(--bg); padding: 16px 18px; }
+.ai-list b { font-size: 15px; font-weight: 600; }
+.ai-list p { color: var(--muted); font-size: 13.5px; margin-top: 3px; }
+kbd { font: 500 11px/1 var(--mono); padding: 3px 5px; border-radius: 4px; background: var(--field); box-shadow: inset 0 0 0 1px var(--line-2); color: var(--fg); }
+@media (max-width: 1000px) { .edit-wrap { grid-template-columns: 1fr; } }
+@media (max-width: 640px) { .tl-top { grid-template-columns: 1fr; } .tl-ins { display: none; } }
+
+/* ---------- More films ---------- */
+.reel { display: grid; grid-template-columns: repeat(4, minmax(0, 1fr)); gap: 14px; }
+.film { display: grid; gap: 8px; min-width: 0; }
+.film .pic { position: relative; aspect-ratio: 394/164; border-radius: 10px; overflow: hidden; background: var(--card); box-shadow: 0 0 0 1px var(--line); }
+.film .pic img { width: 100%; height: 100%; object-fit: cover; transition: transform .6s cubic-bezier(.2,.7,.2,1); }
+.film:hover .pic img { transform: scale(1.05); }
+.film h3 { font: 600 15px/1.2 var(--body); }
+.film .m { font: 400 12px/1.2 var(--mono); color: var(--faint); }
+@media (max-width: 1000px) { .reel { grid-template-columns: repeat(2, minmax(0, 1fr)); } }
+@media (max-width: 520px) { .reel { grid-template-columns: 1fr; } }
+
+/* ---------- Local ---------- */
+.local { display: grid; grid-template-columns: minmax(0, 1fr) minmax(0, 1fr); gap: 64px; align-items: center; }
+.tree { background: var(--panel); border-radius: 14px; box-shadow: inset 0 0 0 1px var(--line); padding: 24px; font: 400 13.5px/1.9 var(--mono); overflow-x: auto; white-space: pre; color: var(--muted); }
+.tree b { color: var(--fg); font-weight: 500; }
+.tree em { color: var(--faint); font-style: normal; }
+.dl { margin: 0; }
+.dl div { display: grid; grid-template-columns: 130px minmax(0, 1fr); gap: 20px; padding: 18px 0; border-top: 1px solid var(--line); }
+.dl div:last-child { border-bottom: 1px solid var(--line); }
+.dl dt { font: 500 12px/1.6 var(--mono); color: var(--faint); text-transform: uppercase; letter-spacing: .06em; }
+.dl dd { margin: 0; color: var(--muted); font-size: 15px; }
+.dl dd b { color: var(--fg); font-weight: 600; }
+@media (max-width: 900px) { .local { grid-template-columns: 1fr; gap: 36px; } }
+@media (max-width: 480px) { .dl div { grid-template-columns: 1fr; gap: 4px; } }
+
+/* ---------- CTA ---------- */
+.cta { position: relative; margin-top: 150px; border-radius: 24px; overflow: hidden; box-shadow: 0 0 0 1px var(--line-2); background: #000 url(img/s7-end.webp) center 60%/cover; }
+.cta::after { content: ""; position: absolute; inset: 0; background: linear-gradient(90deg, rgb(9 9 10 / 94%) 25%, rgb(9 9 10 / 55%) 60%, rgb(9 9 10 / 20%)); }
+.cta .inner { position: relative; z-index: 1; padding-block: 96px; padding-left: max(24px, 6%); padding-right: max(24px, 6%); display: grid; grid-template-columns: minmax(0, 1.2fr) minmax(0, .9fr); gap: 48px; align-items: end; }
+.cta h2 { font-size: clamp(48px, 7vw, 116px); }
+.cta p { color: rgb(242 242 243 / 78%); margin-top: 20px; max-width: 46ch; font-size: 17px; }
+.signup { display: grid; gap: 10px; }
+.signup .line { display: flex; gap: 8px; flex-wrap: wrap; }
+.signup input { flex: 1 1 220px; min-width: 0; height: 48px; border-radius: 999px; border: 0; box-shadow: inset 0 0 0 1px var(--line-2); background: rgb(0 0 0 / 55%); color: var(--fg); padding: 0 18px; font: 400 15px var(--body); }
+.signup input::placeholder { color: var(--faint); }
+.signup .btn { height: 48px; }
+.signup .done { font: 500 13px/1.4 var(--mono); color: var(--music); }
+@media (max-width: 900px) { .cta .inner { grid-template-columns: 1fr; padding-block: 60px; } }
+
+footer { margin-top: 80px; padding-block: 40px; border-top: 1px solid var(--line); }
+footer .wrap { display: flex; flex-wrap: wrap; gap: 20px 40px; align-items: center; justify-content: space-between; font-size: 13px; color: var(--faint); }
+footer nav { display: flex; gap: 20px; flex-wrap: wrap; }
+footer a { text-decoration: none; }
+footer a:hover { color: var(--fg); }
+
+@keyframes rise { from { transform: translateY(16px); opacity: .001; } }
+.hero h1 { animation: rise 1s cubic-bezier(.2,.7,.2,1) .1s both; }
+.hero-side { animation: rise 1s cubic-bezier(.2,.7,.2,1) .25s both; }
+@media (prefers-reduced-motion: reduce) { *, *::before, *::after { animation: none !important; transition: none !important; } html { scroll-behavior: auto; } }
+</style>
+</head><body>
+
+<header class="nav">
+  <div class="wrap">
+    <a class="logo" href="#top" aria-label="Wildroom home">
+      <span class="mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M1.8 10.8 6.6 21.3 12 13.8 17.4 21.3 22.2 10.8" stroke="currentColor" stroke-width="2.75" stroke-linejoin="round"/><path d="M12 .3c.53 3.29 1.71 4.47 5 5-3.29.53-4.47 1.71-5 5-.53-3.29-1.71-4.47-5-5 3.29-.53 4.47-1.71 5-5Z" fill="currentColor"/></svg></span>
+      <b>WILDROOM</b>
+    </a>
+    <ul>
+      <li><a href="#story">Story mode</a></li>
+      <li><a href="#generate">Generation</a></li>
+      <li><a href="#edit">Editing</a></li>
+      <li><a href="#films">Films</a></li>
+      <li><a href="#local">On your Mac</a></li>
+    </ul>
+    <a class="btn btn-primary" href="#access">Get early access</a>
+  </div>
+</header>
+
+<main id="top">
+  <section class="hero">
+    <div class="hero-stage">
+      <video id="hero-video" src="media/film.mp4" poster="media/poster.jpg" autoplay muted loop playsinline preload="auto" aria-label="Impossible Worlds, a 25-second film made in Wildroom Studio"></video>
+      <div class="credit">
+        <span class="chip">Impossible Worlds · made in Wildroom · 25 s</span>
+        <button class="chip sound" id="sound" type="button" aria-pressed="false"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 5 6 9H2v6h4l5 4z"/><path id="snd-x" d="m23 9-6 6m0-6 6 6"/></svg><span id="snd-l">Sound off</span></button>
+      </div>
+      <div class="hero-copy">
+        <div class="wrap">
+          <h1>From one<br>script to the<br>final cut.</h1>
+          <div class="hero-side">
+            <span class="eyebrow" style="color:#fff"><i style="background:var(--ochre)"></i>Wildroom Studio · macOS</span>
+            <p><b>An AI film studio in one window.</b> Write the story, design the cast and places, let the AI Director plan every shot, render it with the best video models and cut it on a magnetic timeline.</p>
+            <div class="ctas">
+              <a class="btn btn-primary" href="#access"><svg viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M16.4 12.6c0-2.5 2-3.6 2.1-3.7-1.2-1.7-3-1.9-3.6-2-1.5-.2-3 .9-3.8.9s-2-.9-3.3-.9C6.1 7 4.5 8 3.6 9.6c-1.8 3.2-.5 7.9 1.3 10.4.9 1.2 1.9 2.6 3.2 2.6 1.3-.1 1.8-.8 3.3-.8s2 .8 3.3.8c1.4 0 2.3-1.3 3.1-2.5 1-1.4 1.4-2.8 1.4-2.9 0 0-2.8-1.1-2.8-4.6ZM14 5.1c.7-.9 1.2-2 1-3.1-1 0-2.2.7-2.9 1.5-.6.7-1.2 1.9-1 3 1.1.1 2.2-.6 2.9-1.4Z"/></svg>Get it for Mac</a>
+              <a class="btn btn-ghost" href="#story">See how it was made</a>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+    <div class="facts" aria-label="What Impossible Worlds took">
+      <div class="wrap">
+        <div class="fact"><b>1</b><span>script, 25 seconds</span></div>
+        <div class="fact"><b>1 · 1</b><span>hero · place</span></div>
+        <div class="fact"><b>7</b><span>shots planned by the Director</span></div>
+        <div class="fact"><b>28</b><span>stills · GPT Image 2.5</span></div>
+        <div class="fact"><b>6/6</b><span>animated · LTX-2.5 on GPU</span></div>
+        <div class="fact"><b>$7.23</b><span>spent, all in</span></div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="story" style="padding-bottom:0">
+    <div class="wrap">
+      <div class="sh">
+        <div><span class="eyebrow"><i style="background:var(--titles)"></i>Story mode</span><h2 class="disp">Four steps. The real project, step by step.</h2></div>
+        <p>This is how <b>Impossible Worlds</b> was made, exactly as the app shows it. Every text, still and clip below comes from the project file.</p>
+      </div>
+    </div>
+
+    <nav class="stepper" aria-label="Story mode steps">
+      <div class="wrap">
+        <div class="ttl"><b>Impossible Worlds</b><span>On a vast alien salt plain beneath three giant planets…</span></div>
+        <a class="step-btn done on" href="#step-story" data-step="story"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><span class="l"><b>Story</b><small>1 scene</small></span></a>
+        <a class="step-btn done" href="#step-cast" data-step="cast"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><span class="l"><b>Cast &amp; Places</b><small>1 hero · 1 place</small></span></a>
+        <a class="step-btn done" href="#step-scenes" data-step="scenes"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><span class="l"><b>Scenes</b><small>1/1 written</small></span></a>
+        <a class="step-btn done" href="#step-render" data-step="render"><span class="ck"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="3"><path d="m5 12 5 5 9-10"/></svg></span><span class="l"><b>Render</b><small>6/6 animated</small></span></a>
+        <span class="sp"></span>
+        <span class="chip o">GPT Image 2.5 · LTX-2.5 (RunPod GPU)</span>
+        <span class="chip">Spent $7.23</span>
+      </div>
+    </nav>
+
+    <div class="wrap">
+      <!-- Step 1 -->
+      <div class="stage" id="step-story" data-step="story">
+        <div class="stage-copy">
+          <span class="num">STEP 1 · STORY</span>
+          <h3>Write it. The Director outlines it.</h3>
+          <p>Paste a screenplay, or type an idea and let the AI write a short script from it. Add a visual style once and every still follows it.</p>
+          <ul>
+            <li><span><b>Write script from idea</b> turns a line into a screenplay. Undo brings your idea back.</span></li>
+            <li><span><b>Create scenes</b> reads the script into heroes, places and scenes in chapters.</span></li>
+            <li><span>Claude, GPT, Gemini or any OpenRouter text model can direct.</span></li>
+          </ul>
+        </div>
+        <div class="app">
+          <div class="app-bar"><b>1 · The story</b><span class="sp"></span><span class="chip">Write script from idea</span><span class="chip w">Create scenes</span></div>
+          <div class="s1">
+            <div class="pane">
+              <span class="lbl">Script</span>
+              <div class="script" style="margin-top:10px"><span class="h">IMPOSSIBLE WORLDS</span>
+A 25-second science-fiction vision, 16:9, built for scale. No dialogue: wind, breath and a vast low hum.
+
+<span class="h">EXT. KETHRA SALT PLAIN — DAY</span>
+
+An endless desert of ochre dunes under a pale violet sky. Three giant planets hang over the horizon: a colossal banded amber gas giant, a pale-blue ice world above it, a rust-red moon beside it. <span class="t">[AMB: thin high wind, sand hiss]</span>
+
+Far below, a single tiny figure walks out onto the flat white salt plain: <span class="c">KAEL</span>, his cloak trailing in the wind.
+
+He stops at the centre of the plain, pulls his scarf down from his face and looks up at the planets. A breath. Stillness.
+
+A grain of sand rises past his face. Then another. Then thousands. <span class="t">[SFX: a deep subsonic hum builds under the wind]</span>
+
+<span class="h">EXT. KETHRA SALT PLAIN — CONTINUOUS</span>
+
+The camera pulls back and up, faster and faster…</div>
+              <div class="style-f"><span class="lbl">Visual style</span>Epic photorealistic science-fiction cinema, vast scale and atmospheric haze, ochre and rust desert under a pale violet sky, three giant planets on the horizon, 65mm large-format film texture, soft diffused light.</div>
+            </div>
+            <div class="pane outline">
+              <span class="lbl">Outline</span>
+              <h4>Impossible Worlds</h4>
+              <p class="log">On a vast alien salt plain beneath three giant planets, a lone traveller triggers the awakening of a colossal buried ring structure.</p>
+              <div class="chapter">
+                <span class="ch">Chapter · The World Beneath</span>
+                <div class="scene-card">
+                  <div class="row"><span class="tag">Scene 1</span><b>Kethra salt plain — day</b></div>
+                  <p>Kael walks from the ochre dunes onto the white salt plain, stops at its centre, lowers his scarf and looks up at the three immense planets. Sand and salt stream upward as glowing geometric lines appear beneath his boots…</p>
+                </div>
+              </div>
+              <span class="lbl" style="margin-top:6px">Found in the script</span>
+              <div class="mini-ids"><span>Hero · Kael</span><span>Place · Kethra salt plain</span><span>Time · day</span><span>No dialogue</span></div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 2 -->
+      <div class="stage" id="step-cast" data-step="cast">
+        <div class="stage-copy">
+          <span class="num">STEP 2 · CAST &amp; PLACES</span>
+          <h3>Design the faces and the world once.</h3>
+          <p>Every hero gets a look, a voice and a front view. Every place gets photos in four directions, so each shot gets the backdrop it actually looks at.</p>
+          <ul>
+            <li><span><b>Look takes</b>: generate until the face is right, then pick the front view.</span></li>
+            <li><span><b>Four views</b> of a place: main, reverse, left and right.</span></li>
+            <li><span>Light and blocking stored on the place, reused by every scene there.</span></li>
+          </ul>
+        </div>
+        <div class="app">
+          <div class="app-bar"><b>2 · Cast &amp; Places</b><span class="sp"></span><span class="chip">Assets</span><span class="chip w">Scenes →</span></div>
+          <div class="s2">
+            <div class="pane">
+              <span class="lbl">Cast · 1 hero</span>
+              <div class="cast-top" style="margin-top:12px">
+                <div class="face"><img src="img/kael-look.webp" alt="Kael, front view"><span>Front view</span></div>
+                <div class="who">
+                  <h4>Kael</h4>
+                  <p>38, lean, sun-darkened weathered face, close-cropped black hair, a thin scar through one eyebrow; long hooded sand-coloured cloak over a dark grey utility suit, cloth scarf, worn leather boots.</p>
+                  <dl class="kv"><dt>Voice</dt><dd>quiet, hoarse male voice</dd><dt>Look</dt><dd>10 takes · GPT Image 2.5</dd></dl>
+                </div>
+              </div>
+              <div class="takes6" aria-label="Kael look takes">
+                <div><img src="img/kael-d2.webp" alt="Kael look take"></div><div><img src="img/kael-d1.webp" alt="Kael look take"></div><div><img src="img/kael-d3.webp" alt="Kael look take"></div><div><img src="img/kael-d4.webp" alt="Kael look take"></div><div><img src="img/kael-d5.webp" alt="Kael look take"></div>
+              </div>
+            </div>
+            <div class="pane">
+              <span class="lbl">Places · 1 place</span>
+              <div style="display:flex;justify-content:space-between;align-items:baseline;gap:12px;margin-top:12px;flex-wrap:wrap"><b style="font-size:16px">Kethra salt plain</b><span class="mono" style="font-size:11.5px;color:var(--muted)">4 views · 5 takes</span></div>
+              <div class="views">
+                <div class="view main"><img src="img/place-main.webp" alt="Kethra salt plain, main view looking east"><span>Main · looking east</span><div class="compass" aria-hidden="true"><i style="top:5px">N</i><i style="right:6px">E</i><i style="bottom:5px">S</i><i style="left:6px">W</i></div></div>
+                <div class="view"><img src="img/place-reverse.webp" alt="Reverse view"><span>Reverse</span></div>
+                <div class="view"><img src="img/place-left.webp" alt="Left view"><span>Left</span></div>
+              </div>
+              <dl class="kv" style="grid-template-columns:70px minmax(0,1fr)"><dt>Light</dt><dd style="color:var(--muted)">Soft diffused daylight from the pale violet sky; planets lit from screen right by a small distant white sun.</dd><dt>Blocking</dt><dd style="color:var(--muted)">Kael alone at the centre of the salt plain.</dd></dl>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 3 -->
+      <div class="stage" id="step-scenes" data-step="scenes">
+        <div class="stage-copy">
+          <span class="num">STEP 3 · SCENES</span>
+          <h3>The Director writes every shot.</h3>
+          <p>For each scene the AI Director writes the shots: type and lens, where the camera stands, what is in frame, the camera move, the sound. Then it draws a keyframe for each one, and an end frame where the world changes.</p>
+          <ul>
+            <li><span><b>Stills</b>: keyframes from the cast and the place view the camera faces.</span></li>
+            <li><span><b>End frames</b> only where something transforms, so the clip lands on it.</span></li>
+            <li><span><b>Multi-shot</b>: group shots into one generation with real cuts.</span></li>
+          </ul>
+          <span class="fine">Click a shot to open what the Director wrote.</span>
+        </div>
+        <div class="app">
+          <div class="app-bar"><b>Scenes</b><span class="chip o">1</span><span class="sp"></span><span class="chip">Stills</span><span class="chip w">Animate scene</span></div>
+          <div class="s3">
+            <div class="board">
+              <div class="scene-h">
+                <div class="row"><span class="tag">Scene 1</span><h4>Kethra salt plain — day</h4><span class="mono" style="font-size:12px;color:var(--muted)">◎ Kethra salt plain · day</span></div>
+                <p>Kael walks from the ochre dunes onto the white salt plain, stops at its centre, lowers his scarf and looks up at the three immense planets. Sand and salt stream upward as glowing geometric lines appear beneath his boots, and a rapidly rising camera reveals a buried ring structure kilometres wide.</p>
+                <div class="meta"><span class="mono">7 shots · 25 s · stills 11/11 · animated 6/6</span></div>
+              </div>
+              <div class="multi">
+                <div class="multi-h"><b>Multi-shot · shots 1–2</b><small>one 6 s clip, cuts about 3 s</small><span class="sp"></span><span class="chip">Another take</span><span class="chip">Break up</span></div>
+                <div class="multi-n">LTX-2.5 (RunPod GPU) · Auto · first keyframe. Chosen take: cut detected at 0.5 s.</div>
+                <div id="shots-a"></div>
+              </div>
+              <div id="shots-b" style="display:grid;gap:8px"></div>
+            </div>
+            <aside class="insp pane">
+              <div class="f"><span class="lbl">Place</span><div class="place-th"><img src="img/place-main.webp" alt=""><span>Kethra salt plain</span></div></div>
+              <div class="f"><span class="lbl">Time of day</span><div class="v">day</div></div>
+              <div class="f"><span class="lbl">Who’s in it</span><div class="v who2"><img src="img/kael-look.webp" alt="">Kael</div></div>
+              <div class="f"><span class="lbl">Shots to write</span><div class="v">Director decides</div></div>
+              <div class="f"><span class="lbl">Light</span><div class="v m">Soft diffused daylight; a distant white sun from screen right casts long, faint shadows toward screen left through the haze.</div></div>
+            </aside>
+          </div>
+        </div>
+      </div>
+
+      <!-- Step 4 -->
+      <div class="stage" id="step-render" data-step="render">
+        <div class="stage-copy">
+          <span class="num">STEP 4 · RENDER</span>
+          <h3>Animate everything. Assemble the film.</h3>
+          <p>Every still becomes video in one batch, after a cost check. Draft on a cheap model, then render the chosen takes again with a final model. Assemble puts every shot on the timeline with chapter markers.</p>
+          <ul>
+            <li><span><b>Budget</b>: set a limit, see the spend live.</span></li>
+            <li><span><b>Temp voices</b>: assemble with free macOS voices to check the pacing first.</span></li>
+            <li><span><b>Render queue</b>: reorder, pause, see time left.</span></li>
+          </ul>
+        </div>
+        <div class="app">
+          <div class="app-bar"><b>4 · Render</b><span class="sp"></span><span class="chip">Final render</span><span class="chip">Temp voices</span><span class="chip w">Assemble to timeline</span></div>
+          <div class="s4">
+            <div class="tw">
+              <table class="rtable">
+                <thead><tr><th>Scene</th><th>Shots</th><th>Stills</th><th>Animated</th><th>Model</th><th>Spent</th></tr></thead>
+                <tbody><tr><td>1 · Kethra salt plain — day</td><td>7</td><td class="ok">11/11</td><td class="ok">6/6</td><td>LTX-2.5 · RunPod GPU</td><td class="mono">$7.23</td></tr></tbody>
+              </table>
+            </div>
+            <div class="renders" id="renders"></div>
+            <div class="assemble"><p>Takes, sound and chapter markers go onto the timeline in script order.</p><span class="sp"></span><span class="chip w">Assemble to timeline →</span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="generate">
+    <div class="wrap">
+      <div class="sh">
+        <div><span class="eyebrow"><i style="background:var(--ochre)"></i>Generation</span><h2 class="disp">A start, an end, and the shot in between.</h2></div>
+        <p>The keyframe sets the composition. The end frame says how the world has changed. The video model fills the motion between them, so a 25-second transformation stays under control shot by shot.</p>
+      </div>
+      <div class="gen-tabs" role="tablist" aria-label="Choose a shot">
+        <button class="on" role="tab" aria-selected="true" data-g="0">Shot 3 · Sand rises</button>
+        <button role="tab" aria-selected="false" data-g="1">Shot 4 · Curves ignite</button>
+        <button role="tab" aria-selected="false" data-g="2">Shot 5 · Metal surfaces</button>
+        <button role="tab" aria-selected="false" data-g="3">Shot 7 · The reveal</button>
+      </div>
+      <div class="triptych">
+        <div class="tp"><div class="pic"><img id="g-key" src="img/s3-key.webp" alt="Start keyframe"><span>Keyframe · GPT Image 2.5</span></div><p class="cap" id="g-kc"></p></div>
+        <div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+        <div class="tp"><div class="pic"><img id="g-end" src="img/s3-end.webp" alt="End frame"><span>End frame · GPT Image 2.5</span></div><p class="cap" id="g-ec"></p></div>
+        <div class="arrow" aria-hidden="true"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14m-6-6 6 6-6 6"/></svg></div>
+        <div class="tp"><div class="pic"><video id="g-vid" src="media/clip1.mp4" autoplay muted loop playsinline></video><span>Shot · LTX-2.5 on RunPod GPU</span></div><p class="cap" id="g-vc"></p></div>
+      </div>
+      <div class="sent">
+        <div class="code" id="g-code"></div>
+        <div class="where">
+          <h4>Models, grouped by where they run</h4>
+          <div class="grp"><span class="lbl">On this Mac · free, private</span><div><span>LTX-2.5</span><span>FLUX.2</span><span>Demo models</span></div></div>
+          <div class="grp"><span class="lbl">Your cloud GPU · RunPod, ComfyUI</span><div><span class="cur">LTX-2.5 (RunPod GPU)</span><span>Any ComfyUI workflow</span></div></div>
+          <div class="grp"><span class="lbl">APIs · your keys</span><div><span>Kling 3.0</span><span>Veo 3.1</span><span>Seedance</span><span>Wan</span><span>MiniMax</span><span class="cur">GPT Image 2.5</span><span>Nano Banana</span><span>Seedream 5</span><span>FLUX.3</span><span>Recraft</span><span>ElevenLabs v4</span></div></div>
+          <p class="fine">Every render keeps what was sent: prompt, inputs, settings, time and cost. Load it back into Generate, or render it again.</p>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="edit">
+    <div class="wrap">
+      <div class="sh">
+        <div><span class="eyebrow"><i style="background:var(--video)"></i>Editing</span><h2 class="disp">Then it’s a real edit.</h2></div>
+        <p>A magnetic, Final Cut–style timeline with the shortcuts your hands already know, plus generation that understands the cut around it.</p>
+      </div>
+      <div class="edit-wrap">
+        <div class="tl" aria-label="The Impossible Worlds timeline">
+          <div class="tl-top">
+            <div><div class="tl-view"><video id="tl-video" src="media/film.mp4" muted loop playsinline autoplay></video><span class="cap">Main · Impossible Worlds</span></div><div class="tl-ctl"><span id="tl-tc">00:00:00:00</span><span>◀◀ ▶ ▶▶</span><span>00:00:25:07</span></div></div>
+            <div class="tl-ins">
+              <div class="v"><b>Inspector</b> · Shot 7 · A rapid ascent reveals the entire ring structure</div>
+              <div class="v">Takes <b>1 of 1</b> · <kbd>⌃←</kbd> <kbd>⌃→</kbd></div>
+              <div class="v">Conform <b>Fit</b> · Opacity <b>100%</b></div>
+              <div class="v">Export <b>H.264 · −14 LUFS</b> · <kbd>⌘E</kbd></div>
+            </div>
+          </div>
+          <div class="lanes" id="lanes">
+            <div class="ruler"><span style="left:0">0:00</span><span style="left:19.6%">0:05</span><span style="left:39.2%">0:10</span><span style="left:58.8%">0:15</span><span style="left:78.4%">0:20</span></div>
+            <div class="playhead" id="tl-ph"></div>
+            <div class="lane"><div class="clip c-t" style="left:0;width:16%">IMPOSSIBLE WORLDS</div></div>
+            <div class="lane v">
+              <div class="clip vid" data-l="1–2 · Multi-shot" style="left:0;width:23.8%;background-image:url(img/s1-key.webp)"></div>
+              <div class="clip vid" data-l="3 · Sand rises" style="left:24%;width:11.8%;background-image:url(img/s3-end.webp)"></div>
+              <div class="clip vid" data-l="4 · Curves" style="left:36%;width:11.8%;background-image:url(img/s4-end.webp)"></div>
+              <div class="clip vid" data-l="5 · Metal" style="left:48%;width:15.8%;background-image:url(img/s5-end.webp)"></div>
+              <div class="clip vid" data-l="6 · Rings" style="left:64%;width:11.8%;background-image:url(img/s6-end.webp)"></div>
+              <div class="clip vid" data-l="7 · The reveal" style="left:76%;width:24%;background-image:url(img/s7-end.webp)"></div>
+            </div>
+            <div class="lane"><div class="clip c-x wave" style="left:0;width:47%">Wind · sand hiss</div></div>
+            <div class="lane"><div class="clip c-m wave" style="left:24%;width:76%">Subsonic hum · swells, then silence</div></div>
+          </div>
+        </div>
+        <div class="ai-list">
+          <div><b>Generative extend</b><p>Drag a clip past its media and release: more picture after the last frame.</p></div>
+          <div><b>Fill a gap</b><p>A bridging shot from one clip’s last frame to the next clip’s first.</p></div>
+          <div><b>Edit inside a shot</b><p>Mark an area, describe the change, get it back as a new take.</p></div>
+          <div><b>Continuity check</b><p>A vision model compares both sides of every cut and suggests a prompt fix.</p></div>
+          <div><b>Smart reframe</b><p>A 9:16 or 1:1 copy where every shot follows its subject.</p></div>
+          <div><b>Edit by transcript · captions · auto-ducking</b><p>Cut words like text, burn in captions, music dips under speech.</p></div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="films">
+    <div class="wrap">
+      <div class="sh">
+        <div><span class="eyebrow"><i style="background:var(--selection)"></i>More from the same app</span><h2 class="disp">Westerns, dragons, a watch ad.</h2></div>
+        <p>Every project is <b>one folder</b> with its timeline, its story and every original in it.</p>
+      </div>
+      <div class="reel">
+        <article class="film"><div class="pic"><img src="img/neon-miami.webp" alt="Guests on a balcony above a neon-lit bay"></div><h3>Neon Miami</h3><span class="m">16:9 · 24 fps · 00:00:03:01</span></article>
+        <article class="film"><div class="pic"><img src="img/last-road.webp" alt="A family on a smoky road"></div><h3>The Last Road</h3><span class="m">16:9 · 24 fps · 00:00:23:03</span></article>
+        <article class="film"><div class="pic"><img src="img/paper-universe.webp" alt="A papercraft city on a river"></div><h3>The Paper Universe</h3><span class="m">16:9 · 24 fps · 00:00:05:00</span></article>
+        <article class="film"><div class="pic"><img src="img/object-of-desire.webp" alt="A skeleton watch"></div><h3>Object of Desire</h3><span class="m">16:9 · 24 fps · 00:00:09:01</span></article>
+        <article class="film"><div class="pic"><img src="img/good-day.webp" alt="A man on a New York street"></div><h3>Good Day</h3><span class="m">16:9 · 24 fps · 00:00:25:03</span></article>
+        <article class="film"><div class="pic"><img src="img/dare.webp" alt="Two faces close together"></div><h3>Dare</h3><span class="m">16:9 · 24 fps · 00:01:05:07</span></article>
+        <article class="film"><div class="pic"><img src="img/dragon-slayer.webp" alt="Knights facing a dragon"></div><h3>Dragon Slayer</h3><span class="m">16:9 · key art</span></article>
+        <article class="film"><div class="pic"><img src="img/impossible-worlds.webp" alt="Kael on the salt plain"></div><h3>Impossible Worlds</h3><span class="m">16:9 · 24 fps · 00:00:25:06</span></article>
+      </div>
+    </div>
+  </section>
+
+  <section class="block" id="local">
+    <div class="wrap">
+      <div class="local">
+        <div>
+          <span class="eyebrow"><i style="background:var(--music)"></i>On your Mac</span>
+          <h2 class="disp" style="font-size:clamp(40px,5vw,76px);margin:18px 0 28px">Your films are folders.</h2>
+          <dl class="dl">
+            <div><dt>Projects</dt><dd>One self-contained <b>.wildroom</b> folder per film. Copy it to a drive, keep it in iCloud Drive or Dropbox, open it on another Mac.</dd></div>
+            <div><dt>Local models</dt><dd><b>LTX-2.5</b> video and <b>FLUX.2</b> images run on Apple Silicon. Free, private, nothing uploaded.</dd></div>
+            <div><dt>Cloud GPU</dt><dd>Rent a GPU for a session, run ComfyUI in an app window, outputs land in the project.</dd></div>
+            <div><dt>Your keys</dt><dd>Keys live in the macOS Keychain. You pay providers directly and <b>see the price before every render</b>.</dd></div>
+          </dl>
+        </div>
+        <div class="tree" aria-label="Project folder structure"><b>Impossible Worlds.wildroom/</b>
+  <b>project.json</b>          <em># timeline, story, mix</em>
+  <b>Assets/</b>                <em># 42 items</em>
+    Kael — look.json
+    Shot 5 — end frame.json
+  <b>Generations/</b>           <em># model, prompt, cost</em>
+    iEXOWwA1A-qb.json     <em># LTX-2.5 · 6 s · 1080p</em>
+  <b>Media/</b>                 <em># every original</em>
+    bffb7150…69b9.mp4
+    40fbcd25…d7.jpg</div>
+      </div>
+    </div>
+  </section>
+
+  <div class="wrap">
+    <section class="cta" id="access">
+      <div class="inner">
+        <div>
+          <h2 class="disp">Open the<br>wild room.</h2>
+          <p>Wildroom Studio is in early access for Apple Silicon Macs. Leave your email and we will send you a build. Demo mode runs the whole workflow before you add a single key.</p>
+        </div>
+        <form class="signup" id="signup" novalidate>
+          <label class="eyebrow" for="email" style="color:#fff">Early access</label>
+          <div class="line">
+            <input id="email" type="email" placeholder="you@studio.com" autocomplete="email" required>
+            <button class="btn btn-primary" type="submit">Request a build</button>
+          </div>
+          <span class="fine" id="signup-msg">macOS · Apple Silicon</span>
+        </form>
+      </div>
+    </section>
+  </div>
+</main>
+
+<footer>
+  <div class="wrap">
+    <a class="logo" href="#top"><span class="mark"><svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M1.8 10.8 6.6 21.3 12 13.8 17.4 21.3 22.2 10.8" stroke="currentColor" stroke-width="2.75" stroke-linejoin="round"/><path d="M12 .3c.53 3.29 1.71 4.47 5 5-3.29.53-4.47 1.71-5 5-.53-3.29-1.71-4.47-5-5 3.29-.53 4.47-1.71 5-5Z" fill="currentColor"/></svg></span><b>WILDROOM</b></a>
+    <nav><a href="#story">Story mode</a><a href="#generate">Generation</a><a href="#edit">Editing</a><a href="#films">Films</a><a href="#local">On your Mac</a></nav>
+    <span class="mono">wildroom.io · © 2026</span>
+  </div>
+</footer>
+
+<script>
+(function () {
+  var reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  function tc(sec) {
+    var f = Math.floor((sec % 1) * 24), s = Math.floor(sec);
+    function p(n) { return String(n).padStart(2, '0'); }
+    return '00:00:' + p(s) + ':' + p(f);
+  }
+  var check = '<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><rect x="3" y="5" width="18" height="14" rx="2"/><path d="M8 5v14M16 5v14"/></svg>';
+
+  // Hero sound toggle
+  var hv = document.getElementById('hero-video'), sb = document.getElementById('sound');
+  if (reduce) { hv.removeAttribute('autoplay'); hv.pause(); }
+  sb.addEventListener('click', function () {
+    hv.muted = !hv.muted; if (!hv.muted) hv.play().catch(function () {});
+    sb.setAttribute('aria-pressed', String(!hv.muted));
+    document.getElementById('snd-l').textContent = hv.muted ? 'Sound off' : 'Sound on';
+    document.getElementById('snd-x').style.display = hv.muted ? '' : 'none';
+  });
+
+  // Shots, straight from the project
+  var shots = [
+    { t: 'EXTREME WIDE ESTABLISHING SHOT, elevated eye level, 32mm', d: 'Kael crosses the immense white plain and stops beneath the three planets.', s: 3, key: 's1-key', who: '', cam: 'Slow crane descent following Kael, ending with his full figure isolated at the centre of the plain.', sfx: 'Thin high wind; dry sand hisses over cracked salt; Kael’s boots crunch softly.' },
+    { t: 'MEDIUM CLOSE-UP, eye level, 65mm', d: 'Kael lowers his scarf, raises his eyes and takes one breath.', s: 3, key: null, who: 'Kael', cam: 'Slow dolly push-in, ending on Kael’s face and lowered scarf.', sfx: 'Wind and sand hiss continue; cloth flutters; one quiet, hoarse breath.' },
+    { t: 'CLOSE-UP, eye level, 100mm', d: 'The first grains rise past Kael before the whole surface begins streaming upward.', s: 3, key: 's3-key', end: 's3-end', who: 'Kael', cam: 'Locked-off static camera.', sfx: 'A faint subsonic hum begins beneath Kael’s breathing.' },
+    { t: 'INSERT, steep high angle, 80mm', d: 'Glowing geometric curves ignite beneath Kael’s boots.', s: 3, key: 's4-key', end: 's4-end', who: '', cam: 'Locked-off static camera.', sfx: 'Salt grains whisper upward; the hum strengthens with a low metallic resonance.' },
+    { t: 'WIDE SHOT, high angle, 40mm', d: 'The lifting salt exposes the first vast bands of buried dark metal.', s: 4, key: 's5-key', end: 's5-end', who: '', cam: 'Locked-off static camera.', sfx: 'The upward salt forms a dry rushing veil; the hum becomes a physical vibration.' },
+    { t: 'EXTREME WIDE SHOT, elevated high angle, 32mm', d: 'The final salt sheets lift away, completing the colossal concentric ring structure.', s: 3, key: 's6-key', end: 's6-end', who: '', cam: 'Locked-off static camera.', sfx: 'The dry upward rush spreads across the plain; the hum swells louder and steadier.' },
+    { t: 'EXTREME WIDE AERIAL SHOT, steep high angle opening to grand horizon, 24mm', d: 'A rapid ascent reveals the entire ring structure, desert and planets before the hum cuts out.', s: 6, key: 's7-key', end: 's7-end', who: '', cam: 'Rapid accelerating crane and drone pull-back upward.', sfx: 'The hum swells to its loudest point; at the final image, every sound cuts to silence.' }
+  ];
+  function row(x, i) {
+    var th = x.key ? '<img src="img/' + x.key + '.webp" alt="Shot ' + (i + 1) + ' keyframe">' : '<span class="blank">from shot 1’s<br>keyframe</span>';
+    if (x.end) th += '<img class="end" src="img/' + x.end + '.webp" alt="Shot ' + (i + 1) + ' end frame">';
+    return '<div class="shot" tabindex="0" role="button" aria-expanded="false"><span class="n">' + (i + 1) + '</span><span class="th">' + th + '</span>' +
+      '<span class="d"><small>' + x.t + '</small><b>' + x.d + '</b>' + (x.who ? '<i>' + x.who + '</i>' : '') + '</span>' +
+      '<span class="r">' + x.s + ' s<span class="ok">' + check + '</span></span>' +
+      '<div class="shot-x"><div><b>Camera</b>' + x.cam + '</div><div><b>Sound</b>' + x.sfx + '</div></div></div>';
+  }
+  document.getElementById('shots-a').innerHTML = shots.slice(0, 2).map(row).join('');
+  document.getElementById('shots-a').style.cssText = 'display:grid;gap:8px';
+  document.getElementById('shots-b').innerHTML = shots.slice(2).map(function (x, i) { return row(x, i + 2); }).join('');
+  document.querySelectorAll('.shot').forEach(function (el, i) {
+    if (i === 6) { el.classList.add('open'); el.setAttribute('aria-expanded', 'true'); }
+    function t() { var o = el.classList.toggle('open'); el.setAttribute('aria-expanded', String(o)); }
+    el.addEventListener('click', function (e) { if (!e.target.closest('.shot-x')) t(); });
+    el.addEventListener('keydown', function (e) { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); t(); } });
+  });
+
+  // Renders
+  var rs = [
+    ['Shots 1–2 · multi-shot', 'clip0', '6 s', 's1-key'], ['Shot 3 · sand rises', 'clip1', '3 s', 's3-key'], ['Shot 4 · curves ignite', 'clip2', '3 s', 's4-key'],
+    ['Shot 5 · metal surfaces', 'clip3', '4 s', 's5-key'], ['Shot 6 · the rings', 'clip4', '3 s', 's6-key'], ['Shot 7 · the reveal', 'clip5', '6 s', 's7-key']
+  ];
+  document.getElementById('renders').innerHTML = rs.map(function (r) {
+    return '<div class="rclip"><div class="v"><video src="media/' + r[1] + '.mp4" poster="img/' + r[3] + '.webp" muted loop playsinline preload="metadata"' + (reduce ? '' : ' autoplay') + '></video><span>LTX-2.5 · RunPod GPU</span><em>' + r[2] + '</em></div><div class="m"><b>' + r[0] + '</b><span>1080p · 24 fps</span></div></div>';
+  }).join('');
+
+  // Generation tabs
+  var G = [
+    { k: 's3-key', e: 's3-end', v: 'clip1', kc: '<b>Close-up, 100mm.</b> Kael in three-quarter view, scarf below his mouth, eyes fixed upward.', ec: '<b>End frame.</b> Thousands of sand grains and salt crystals form slow upward streams around him.', vc: '<b>3 s.</b> The first grains rise past his face, then the whole surface starts streaming.',
+      p: 'The first grains rise past Kael before the whole surface begins streaming upward. Locked-off static camera.', d: 3, sfx: 'a faint subsonic hum begins beneath Kael’s breathing' },
+    { k: 's4-key', e: 's4-end', v: 'clip2', kc: '<b>Insert, steep high angle, 80mm.</b> Kael’s boots at frame centre, grains rising vertically.', ec: '<b>End frame.</b> Bright white geometric curves form a precise circular junction beneath his boots.', vc: '<b>3 s.</b> The lines of light trace their curves through the thinning salt.',
+      p: 'Glowing geometric curves ignite beneath Kael’s boots. Locked-off static camera.', d: 3, sfx: 'the hum strengthens with a low metallic resonance' },
+    { k: 's5-key', e: 's5-end', v: 'clip3', kc: '<b>Wide shot, high angle, 40mm.</b> Kael small at frame centre, head lowered toward the junction.', ec: '<b>End frame.</b> Immense concentric arcs of dark metal break through the salt around him.', vc: '<b>4 s.</b> The lifting salt exposes the first bands of buried metal.',
+      p: 'The lifting salt exposes the first vast bands of buried dark metal. Locked-off static camera.', d: 4, sfx: 'the hum builds into a sustained physical vibration' },
+    { k: 's7-key', e: 's7-end', v: 'clip5', kc: '<b>Extreme wide aerial, 24mm.</b> Kael a tiny figure on the luminous central junction.', ec: '<b>End frame.</b> The complete circular structure fills the plain beneath all three planets.', vc: '<b>6 s.</b> A rapid accelerating pull-back upward. The hum swells, then silence.',
+      p: 'Kael holds still at the luminous centre while streams of salt rise above the completed rings. The structure contracts into a vast circular pattern within the surrounding desert, and Kael becomes a near-invisible speck. A rapid accelerating crane and drone pull-back upward.', d: 6, sfx: 'the hum swells to its loudest point; at the final image, every sound cuts to absolute silence' }
+  ];
+  var gk = document.getElementById('g-key'), ge = document.getElementById('g-end'), gv = document.getElementById('g-vid');
+  function esc(s) { return s.replace(/&/g, '&amp;').replace(/</g, '&lt;'); }
+  function showG(i) {
+    var g = G[i];
+    gk.src = 'img/' + g.k + '.webp'; ge.src = 'img/' + g.e + '.webp'; gv.src = 'media/' + g.v + '.mp4'; if (!reduce) gv.play().catch(function () {});
+    document.getElementById('g-kc').innerHTML = g.kc; document.getElementById('g-ec').innerHTML = g.ec; document.getElementById('g-vc').innerHTML = g.vc;
+    document.getElementById('g-code').innerHTML = '<span class="hd">What was sent · LTX-2.5 (RunPod GPU)</span>{\n  <span class="k">"prompt"</span>: <span class="s">"' + esc(g.p) + '\\n\\nWe hear ' + esc(g.sfx) + '."</span>,\n  <span class="k">"firstFrame"</span>: <span class="s">"' + g.k.replace('-key', '') + ' keyframe"</span>,\n  <span class="k">"lastFrame"</span>: <span class="s">"' + g.k.replace('-key', '') + ' end frame"</span>,\n  <span class="k">"duration"</span>: <span class="n">' + g.d + '</span>,\n  <span class="k">"resolution"</span>: <span class="s">"1080p"</span>,\n  <span class="k">"audio"</span>: <span class="n">true</span>,\n  <span class="k">"fps"</span>: <span class="n">24</span>\n}';
+    document.querySelectorAll('.gen-tabs button').forEach(function (b, k) { b.classList.toggle('on', k === i); b.setAttribute('aria-selected', String(k === i)); });
+  }
+  document.querySelectorAll('.gen-tabs button').forEach(function (b, i) { b.addEventListener('click', function () { showG(i); }); });
+  showG(0);
+
+  // Timeline playhead follows the film
+  var tv = document.getElementById('tl-video'), ph = document.getElementById('tl-ph'), ttc = document.getElementById('tl-tc');
+  if (reduce) { tv.removeAttribute('autoplay'); tv.pause(); }
+  tv.addEventListener('timeupdate', function () { var p = tv.currentTime / (tv.duration || 25.3); ph.style.left = (p * 100) + '%'; ttc.textContent = tc(tv.currentTime); });
+  document.getElementById('lanes').addEventListener('click', function (e) {
+    var r = this.getBoundingClientRect(); var p = (e.clientX - r.left) / r.width; tv.currentTime = p * (tv.duration || 25.3);
+  });
+
+  // Stepper follows the scroll
+  var btns = document.querySelectorAll('.step-btn');
+  if ('IntersectionObserver' in window) {
+    var io = new IntersectionObserver(function (es) {
+      es.forEach(function (e) { if (e.isIntersecting) { var s = e.target.getAttribute('data-step'); btns.forEach(function (b) { b.classList.toggle('on', b.getAttribute('data-step') === s); }); } });
+    }, { rootMargin: '-45% 0px -50% 0px' });
+    document.querySelectorAll('.stage').forEach(function (s) { io.observe(s); });
+  }
+
+  // Early access (front-end only)
+  document.getElementById('signup').addEventListener('submit', function (e) {
+    e.preventDefault();
+    var input = document.getElementById('email'), msg = document.getElementById('signup-msg');
+    if (!input.value || !input.checkValidity()) { msg.className = 'fine'; msg.textContent = 'Enter an email address like you@studio.com.'; input.focus(); return; }
+    msg.className = 'done'; msg.textContent = 'Thanks. We will email ' + input.value + ' when your build is ready.'; input.value = '';
+  });
+})();
+</script>
+</body></html>

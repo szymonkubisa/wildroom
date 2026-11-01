@@ -1,0 +1,55 @@
+// Vitest Snapshot v1, https://vitest.dev/guide/snapshot.html
+
+exports[`motion layers > three elements fade and slide in one after another — the same frame always draws the same 1`] = `
+[
+  [
+    "fillRect(0,0,1920,1080) α=1 #000",
+    "translate(960,540)",
+    "fillRect(-960,-540,1920,1080) α=1 #0b1020",
+    "scale(1,1)",
+    "rect(-960,-540,1920,1080)",
+    "translate(-960,-540)",
+  ],
+  [
+    "fillRect(0,0,1920,1080) α=1 #000",
+    "translate(960,540)",
+    "fillRect(-960,-540,1920,1080) α=1 #0b1020",
+    "scale(1,1)",
+    "rect(-960,-540,1920,1080)",
+    "translate(-960,-540)",
+    "fill() α=0.93 #ff4466",
+  ],
+  [
+    "fillRect(0,0,1920,1080) α=1 #000",
+    "translate(960,540)",
+    "fillRect(-960,-540,1920,1080) α=1 #0b1020",
+    "scale(1,1)",
+    "rect(-960,-540,1920,1080)",
+    "translate(-960,-540)",
+    "fill() α=1 #ff4466",
+    "fillText(How it works,160,617) α=0.82 #ffffff",
+  ],
+  [
+    "fillRect(0,0,1920,1080) α=1 #000",
+    "translate(960,540)",
+    "fillRect(-960,-540,1920,1080) α=1 #0b1020",
+    "scale(1,1)",
+    "rect(-960,-540,1920,1080)",
+    "translate(-960,-540)",
+    "fill() α=1 #ff4466",
+    "fillText(How it works,160,609.6) α=1 #ffffff",
+    "drawImage(·,0,0,1280,720,1100,160.85,640,360) α=0.98 #0b1020",
+  ],
+  [
+    "fillRect(0,0,1920,1080) α=1 #000",
+    "translate(960,540)",
+    "fillRect(-960,-540,1920,1080) α=1 #0b1020",
+    "scale(1,1)",
+    "rect(-960,-540,1920,1080)",
+    "translate(-960,-540)",
+    "fill() α=1 #ff4466",
+    "fillText(How it works,160,609.6) α=1 #ffffff",
+    "drawImage(·,0,0,1280,720,1100,160,640,360) α=1 #0b1020",
+  ],
+]
+`;

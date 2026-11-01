@@ -1,0 +1,41 @@
+# Wildroom — the only door to ComfyUI on a render pod.
+# Requests must carry "Authorization: Bearer <token>" (the token the app gave this pod); everything else gets 401.
+# ComfyUI itself listens on 127.0.0.1:18188 only (see on_start.sh), so it is never reachable around this.
+{
+	admin off
+	auto_https off
+	persist_config off
+}
+
+:8188 {
+	@authorized header Authorization "Bearer {$COMFY_AUTH_TOKEN}"
+	@heartbeat path /wildroom/heartbeat
+
+	# Only heartbeats are logged: the watchdog reads this file to know the app is still there.
+	@notHeartbeat not path /wildroom/heartbeat
+	log_skip @notHeartbeat
+	log {
+		output file {$WILDROOM_HEARTBEAT_LOG} {
+			roll_size 1MiB
+			roll_keep 1
+		}
+		format json
+	}
+
+	handle @heartbeat {
+		@ok header Authorization "Bearer {$COMFY_AUTH_TOKEN}"
+		respond @ok 204
+		respond 401
+	}
+
+	handle @authorized {
+		reverse_proxy 127.0.0.1:18188 {
+			header_up -Authorization
+			flush_interval -1
+		}
+	}
+
+	handle {
+		respond "Unauthorized" 401
+	}
+}

@@ -1,0 +1,17 @@
+node_modules/
+dist/
+*.log
+.DS_Store
+.env
+.env.*
+!.env.example
+coverage/
+# local studio library used in tests/dev overrides
+.studio-data/
+tests/.tmp/
+# desktop app: staging dir and electron-builder output
+dist-electron/
+release/
+
+# local film project assets (large audio), kept out of the repo
+Dare/
