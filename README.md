@@ -1,6 +1,6 @@
 # Wildroom
 
-![Wildroom — from one script to the final cut: the editor over a still from the film Impossible Worlds](docs/screenshots/banner.jpg)
+![Wildroom — from one script to the final cut: the projects page and the Paris edit on the timeline](docs/screenshots/banner.jpg)
 
 **An AI film studio for macOS.** Write the story, design the cast and places, let an AI Director plan every shot,
 render it with the best video, image and sound models, and cut it on a Final Cut Pro–style magnetic timeline — one
